@@ -3,10 +3,10 @@ import React from "react";
 
 const page = () => {
   return (
-    <div>
+    <div className="h-screen w-full flex justify-center items-center">
       <AuthModal
         trigger={
-          <button className="text-sm text-blue-600 underline">Login</button>
+          <button className="py-2 px-5 rounded-xl cursor-pointer bg-neutral-800">Login</button>
         }
       />
     </div>

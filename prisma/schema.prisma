@@ -1,7 +1,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../app/generated/prisma"
+  // output   = "../lib/generated/prisma"
 }
 
 datasource db {
@@ -23,20 +23,35 @@ model User {
   @@map("user")
 }
 
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  provider          String
-  providerAccountId String
-  access_token      String?
-  token_type        String?
-  expires_at        Int?
-  refresh_token     String?
-  scope             String?
-  user              User    @relation(fields: [userId], references: [id])
+// model Account {
+//   id                    String    @id @default(cuid())
+//   userId                String
+//   provider              String
+//   providerAccountId     String
+//   accessToken           String?
+//   refreshToken          String?
+//   idToken               String?
+//   accessTokenExpiresAt  DateTime?
+//   refreshTokenExpiresAt DateTime?
+//   password              String?
+//   createdAt             DateTime
+//   updatedAt             DateTime
 
-  accountId             String
-  providerId            String
+//   user User @relation(fields: [userId], references: [id])
+
+//   accountId  String
+//   providerId String
+//   scope      String?
+
+//   @@unique([provider, providerAccountId])
+//   @@map("account")
+// }
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  provider              String
+  providerAccountId     String
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -45,6 +60,12 @@ model Account {
   password              String?
   createdAt             DateTime
   updatedAt             DateTime
+
+  user User @relation(fields: [userId], references: [id])
+
+  accountId  String
+  providerId String
+  scope      String?
 
   @@unique([provider, providerAccountId])
   @@map("account")

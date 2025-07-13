@@ -19,7 +19,7 @@ export default function Navbar() {
   const { data: session, isPending } = useSession();
 
   return (
-    <div className="mx-auto w-full px-4 lg:px-6 xl:max-w-7xl relative">
+    <div className="mx-auto w-full px-4 lg:px-6 xl:max-w-7xl fixed top-0">
       <nav className="flex items-center justify-between gap-4 py-4 lg:h-20 text-sm">
         <div className="flex gap-9 items-center">
           <Link href={"/"}>

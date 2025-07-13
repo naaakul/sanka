@@ -67,9 +67,9 @@ export default function AuthModal({ trigger }: AuthModalProps) {
                   width={200}
                   className="w-5"
                 ></Image>
-                <p className="font-medium">Sign in with Google</p>
               </>
             )}
+            <p className="font-medium">Sign in with Google</p>
           </button>
 
           <button
@@ -88,9 +88,9 @@ export default function AuthModal({ trigger }: AuthModalProps) {
                   width={200}
                   className="w-5"
                 ></Image>
-                <p className="font-medium">Sign in with GitHub</p>
               </>
             )}
+            <p className="font-medium">Sign in with GitHub</p>
           </button>
         </div>
       </DialogContent>

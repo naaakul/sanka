@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Github, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 interface AuthModalProps {
   trigger?: React.ReactNode;

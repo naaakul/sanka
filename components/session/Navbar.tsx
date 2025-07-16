@@ -3,7 +3,7 @@
 import { useState } from "react";
 import AuthModal from "../auth-modal";
 import Image from "next/image";
-import Link, { useLinkStatus } from "next/link";
+import Link from "next/link";
 import { createAuthClient } from "better-auth/react";
 import { Loader2, Menu, X } from "lucide-react";
 

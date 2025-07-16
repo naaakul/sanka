@@ -8,7 +8,7 @@ import { signIn } from "@/lib/auth-client";
 
 export default function SignUpPage() {
   const [loading, setLoading] = useState<"google" | "github" | null>(null);
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
   
     const handleOAuth = async (provider: "google" | "github") => {
       await signIn.social(
@@ -20,7 +20,7 @@ export default function SignUpPage() {
           onRequest: () => setLoading(provider),
           onResponse: () => {
             setLoading(null);
-            setOpen(false);
+            // setOpen(false);
           },
         }
       );

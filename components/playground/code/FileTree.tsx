@@ -180,13 +180,6 @@ export const FileTree: React.FC<FileTreeProps> = ({ onFileSelect, selectedFile }
     onFileSelect(path, content);
   };
 
-  const getFileIcon = (fileName: string) => {
-    if (fileName.endsWith('.tsx') || fileName.endsWith('.ts')) {
-      return '📄';
-    }
-    return '📄';
-  };
-
   const renderNode = (node: FileNode, depth: number = 0) => {
     const isOpen = openFolders.has(node.path);
     const isSelected = selectedFile === node.path;
@@ -257,9 +250,6 @@ export const FileTree: React.FC<FileTreeProps> = ({ onFileSelect, selectedFile }
 
   return (
     <div className="w-80 bg-neutral-950 border-r border-neutral-800 h-full overflow-y-auto">
-      {/* <div className="p-3 border-b border-vscode-border">
-        <h3 className="text-vscode-text text-sm font-medium">Explorer</h3>
-      </div> */}
       <div className="py-2">
         {fileStructure.map(node => renderNode(node))}
       </div>

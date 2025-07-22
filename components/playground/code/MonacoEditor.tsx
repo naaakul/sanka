@@ -1,5 +1,9 @@
-import React, { useRef } from 'react';
-import Editor from '@monaco-editor/react';
+"use client"
+
+import React, { useRef } from "react";
+import Editor from "@monaco-editor/react";
+import { OnMount } from "@monaco-editor/react";
+import * as monaco from "monaco-editor";
 
 interface MonacoEditorProps {
   value: string;
@@ -11,28 +15,40 @@ interface MonacoEditorProps {
 export const MonacoEditor: React.FC<MonacoEditorProps> = ({
   value,
   onChange,
-  language,
-  fileName
+  fileName,
 }) => {
-  const editorRef = useRef<any>(null);
+  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
-  const handleEditorDidMount = (editor: any, monaco: any) => {
+  const handleEditorDidMount: OnMount = (editor, monaco) => {
     editorRef.current = editor;
 
-    // Define a custom theme based on vs-dark with the desired background color
-    monaco.editor.defineTheme('custom-dark', {
-      base: 'vs-dark',
+    monaco.editor.defineTheme("custom-dark", {
+      base: "vs-dark",
       inherit: true,
-      rules: [],
+      rules: [
+        { token: "keyword", foreground: "#F472B6" }, // for `import`, `from`
+        { token: "identifier", foreground: "#E1E4E8" }, // for { useState, useEffect }
+        { token: "variable", foreground: "#79B8FF" }, // for [leftWidth, setLeftWidth]
+        { token: "support.function", foreground: "#C084FC" }, // for removeEventListener, useEffect(...)
+        { token: "entity.name.function", foreground: "#C084FC" }, // useEffect(...)
+        { token: "string", foreground: "#4ADE80" }, // for "react", "w-1"
+        { token: "comment", foreground: "#5C6370", fontStyle: "italic" },
+        { token: "number", foreground: "#D19A66" },
+        { token: "operator", foreground: "#F472B6" }, // =, =>, ==, ===, etc.
+        { token: "type", foreground: "#E5C07B" },
+        { token: "delimiter", foreground: "#E1E4E8" }, // for <, >, (, ), {, }, [, ], etc.
+        { token: "constant", foreground: "#D19A66" },
+        { token: "property", foreground: "#C084FC" }, // for className
+        { token: "parameter", foreground: "#FFAB70" }, // for event
+        { token: "tag", foreground: "#4ADE80" }, // for </div>
+      ],
       colors: {
-        'editor.background': '#0F0F10' // Set the background color here
-      }
+        "editor.background": "#0F0F10",
+      },
     });
 
-    // Set the custom theme
-    monaco.editor.setTheme('custom-dark');
+    monaco.editor.setTheme("custom-dark");
 
-    // Configure TypeScript compiler options
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
       target: monaco.languages.typescript.ScriptTarget.Latest,
       allowNonTsExtensions: true,
@@ -41,18 +57,16 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
       noEmit: true,
       esModuleInterop: true,
       jsx: monaco.languages.typescript.JsxEmit.React,
-      reactNamespace: 'React',
+      reactNamespace: "React",
       allowJs: true,
-      typeRoots: ['node_modules/@types']
+      typeRoots: ["node_modules/@types"],
     });
 
-    // Enable TypeScript diagnostics
     monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
       noSemanticValidation: false,
-      noSyntaxValidation: false
+      noSyntaxValidation: false,
     });
 
-    // Add React types
     const reactTypes = `
 declare module 'react' {
   export interface Component<P = {}, S = {}> {}
@@ -66,10 +80,9 @@ declare module 'react' {
 
     monaco.languages.typescript.typescriptDefaults.addExtraLib(
       reactTypes,
-      'file:///node_modules/@types/react/index.d.ts'
+      "file:///node_modules/@types/react/index.d.ts"
     );
 
-    // Add Next.js types
     const nextTypes = `
 declare module 'next' {
   export interface Metadata {
@@ -84,68 +97,69 @@ declare module 'next/font/google' {
 
     monaco.languages.typescript.typescriptDefaults.addExtraLib(
       nextTypes,
-      'file:///node_modules/@types/next/index.d.ts'
+      "file:///node_modules/@types/next/index.d.ts"
     );
   };
 
   const handleChange = (value: string | undefined) => {
-    onChange(value || '');
+    onChange(value || "");
   };
 
   const getLanguageFromFileName = (fileName: string): string => {
-    if (fileName.endsWith('.tsx') || fileName.endsWith('.jsx')) return 'typescript';
-    if (fileName.endsWith('.ts')) return 'typescript';
-    if (fileName.endsWith('.js')) return 'javascript';
-    if (fileName.endsWith('.css')) return 'css';
-    if (fileName.endsWith('.html')) return 'html';
-    if (fileName.endsWith('.json')) return 'json';
-    return 'typescript';
+    if (fileName.endsWith(".tsx") || fileName.endsWith(".jsx"))
+      return "typescript";
+    if (fileName.endsWith(".ts")) return "typescript";
+    if (fileName.endsWith(".js")) return "javascript";
+    if (fileName.endsWith(".css")) return "css";
+    if (fileName.endsWith(".html")) return "html";
+    if (fileName.endsWith(".json")) return "json";
+    return "typescript";
   };
 
   return (
-    <div className="h-full" style={{ backgroundColor: '#0F0F10' }}> {/* Optional: Set wrapper background to match */}
+    <div className="h-full" style={{ backgroundColor: "#21222C" }}>
       <Editor
         height="100%"
         language={getLanguageFromFileName(fileName)}
         value={value}
         onChange={handleChange}
         onMount={handleEditorDidMount}
-        theme="custom-dark" // Use the custom theme
+        theme="custom-dark"
         options={{
           fontSize: 14,
           fontFamily: 'Consolas, "Courier New", monospace',
           minimap: { enabled: true },
-          lineNumbers: 'on',
-          renderWhitespace: 'selection',
+          lineNumbers: "on",
+          renderWhitespace: "selection",
           tabSize: 2,
           insertSpaces: true,
-          wordWrap: 'on',
+          wordWrap: "on",
           automaticLayout: true,
           scrollBeyondLastLine: false,
           smoothScrolling: true,
-          cursorBlinking: 'blink',
-          cursorSmoothCaretAnimation: 'on',
-          renderLineHighlight: 'line',
+          cursorBlinking: "blink",
+          cursorSmoothCaretAnimation: "on",
+          renderLineHighlight: "line",
           selectionHighlight: true,
-          matchBrackets: 'always',
+          matchBrackets: "always",
           folding: true,
-          foldingStrategy: 'indentation',
-          showFoldingControls: 'mouseover',
+          foldingStrategy: "indentation",
+          showFoldingControls: "mouseover",
           unfoldOnClickAfterEndOfLine: false,
           contextmenu: true,
           mouseWheelZoom: true,
           quickSuggestions: {
             other: true,
             comments: false,
-            strings: false
+            strings: false,
           },
           parameterHints: {
-            enabled: true
+            enabled: true,
           },
           suggest: {
             showKeywords: true,
-            showSnippets: true
-          }
+            showSnippets: true,
+          },
         }}
       />
     </div>

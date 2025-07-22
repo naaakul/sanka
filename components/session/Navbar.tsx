@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { createAuthClient } from "better-auth/react";
 import { Loader2, Menu, X } from "lucide-react";
-import { ThemeToggle } from "../ui/theme-toggle";
+// import { ThemeToggle } from "../ui/theme-toggle";
 
 export const { useSession, signIn, signOut } = createAuthClient();
 
@@ -51,7 +51,6 @@ export default function Navbar() {
         </div>
 
         <div className="flex gap-4">
-          <ThemeToggle />
 
           <div className="hidden lg:block">
             {isPending ? (
@@ -66,15 +65,11 @@ export default function Navbar() {
                 HEY, {session.user.name.split(" ")[0].toUpperCase()}
               </button>
             ) : (
-              // <AuthModal
-              //   trigger={
               <Link href={"/auth/sign-in"}>
                 <button className="py-2 px-4 xl:px-5 rounded-full border border-neutral-600 cursor-pointer hover:border-neutral-400 transition-colors duration-200 text-xs xl:text-sm">
                   LOGIN
                 </button>
               </Link>
-              // }
-              // />
             )}
           </div>
 

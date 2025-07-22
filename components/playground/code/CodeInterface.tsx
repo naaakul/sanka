@@ -16,12 +16,10 @@ export const VSCodeInterface: React.FC = () => {
   const handleFileSelect = (path: string, content: string) => {
     const fileName = path.split("/").pop() || path;
 
-    // If the same file is selected, do nothing
     if (currentFile?.path === path) {
       return;
     }
 
-    // Replace with the new file (only one open at a time)
     setCurrentFile({
       path,
       name: fileName,
@@ -47,7 +45,6 @@ export const VSCodeInterface: React.FC = () => {
     });
   };
 
-  // Open layout.tsx by default
   React.useEffect(() => {
     if (!currentFile) {
       const defaultContent = `import type { Metadata } from "next"
@@ -78,32 +75,17 @@ export default function RootLayout({
 }`;
       handleFileSelect("app/layout.tsx", defaultContent);
     }
-  }, []);
+  }, [currentFile, handleFileSelect]);
 
   return (
     <div className="h-screen bg-neutral-950 text-white flex flex-col">
-      {/* Title Bar */}
-      {/* <div className="h-8 bg-vscode-bg border-b border-vscode-border flex items-center px-4">
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-red-500"></div>
-          <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-          <div className="w-3 h-3 rounded-full bg-green-500"></div>
-        </div>
-        <div className="flex-1 text-center text-sm text-vscode-text-muted">
-          VS Code - Monaco Editor
-        </div>
-      </div> */}
-
       <div className="flex flex-1 overflow-hidden">
-        {/* File Explorer */}
         <FileTree
           onFileSelect={handleFileSelect}
           selectedFile={currentFile?.path ?? null}
         />
 
-        {/* Editor Area */}
         <div className="flex-1 flex flex-col">
-          {/* Editor Breadcrumb */}
           {currentFile && (
             <EditorBreadcrumb
               path={currentFile.path}
@@ -112,7 +94,6 @@ export default function RootLayout({
             />
           )}
 
-          {/* Editor */}
           <div className="flex-1">
             {currentFile ? (
               <MonacoEditor
@@ -132,16 +113,6 @@ export default function RootLayout({
           </div>
         </div>
       </div>
-
-      {/* Status Bar */}
-      {/* <div className="h-6 bg-vscode-selected border-t border-vscode-border flex items-center px-4 text-xs text-white">
-        <span className="mr-4">TypeScript React</span>
-        <span className="mr-4">UTF-8</span>
-        <span className="mr-4">LF</span>
-        <span className="mr-4">Spaces: 2</span>
-        <div className="flex-1"></div>
-        <span>Ln 1, Col 1</span>
-      </div> */}
     </div>
   );
 };

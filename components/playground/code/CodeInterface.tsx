@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { FileTree } from "./FileTree";
+import React, { useState, useEffect } from "react";
 import { EditorBreadcrumb } from "./EditorTabs";
 import { MonacoEditor } from "./MonacoEditor";
+import FileTree from "./FileTree";
 
 interface OpenFile {
   path: string;
@@ -16,9 +16,7 @@ export const CodeInterface: React.FC = () => {
   const handleFileSelect = (path: string, content: string) => {
     const fileName = path.split("/").pop() || path;
 
-    if (currentFile?.path === path) {
-      return;
-    }
+    if (currentFile?.path === path) return;
 
     setCurrentFile({
       path,
@@ -28,24 +26,15 @@ export const CodeInterface: React.FC = () => {
     });
   };
 
-  const handleClose = () => {
-    setCurrentFile(null);
-  };
+  const handleClose = () => setCurrentFile(null);
 
   const handleContentChange = (content: string) => {
     if (!currentFile) return;
 
-    setCurrentFile((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        content,
-        isDirty: true,
-      };
-    });
+    setCurrentFile((prev) => prev ? { ...prev, content, isDirty: true } : prev);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!currentFile) {
       const defaultContent = `import type { Metadata } from "next"
 import { Inter } from "next/font/google"
@@ -75,15 +64,14 @@ export default function RootLayout({
 }`;
       handleFileSelect("app/layout.tsx", defaultContent);
     }
-  }, [currentFile, handleFileSelect]);
+  }, [currentFile]);
 
   return (
     <div className="h-screen bg-neutral-950 text-white flex flex-col">
       <div className="flex flex-1 overflow-hidden">
-        <FileTree
-          onFileSelect={handleFileSelect}
-          selectedFile={currentFile?.path ?? null}
-        />
+        <div className="w-[260px] border-r border-neutral-800 bg-neutral-900 overflow-y-auto">
+          <FileTree />
+        </div>
 
         <div className="flex-1 flex flex-col">
           {currentFile && (

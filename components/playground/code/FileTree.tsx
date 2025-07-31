@@ -1,258 +1,113 @@
-import React, { useState } from 'react';
-import { ChevronRight, ChevronDown, File, FolderOpen, Folder } from 'lucide-react';
+"use client"
 
-interface FileNode {
-  name: string;
-  type: 'file' | 'folder';
-  path: string;
-  children?: FileNode[];
-  isOpen?: boolean;
+import React from "react"
+import { hotkeysCoreFeature, syncDataLoaderFeature } from "@headless-tree/core"
+import { useTree } from "@headless-tree/react"
+import { FileIcon, FolderIcon, FolderOpenIcon } from "lucide-react"
+
+import { Tree, TreeItem, TreeItemLabel } from "./tree"
+
+interface Item {
+  name: string
+  children?: string[]
 }
 
-interface FileTreeProps {
-  onFileSelect: (path: string, content: string) => void;
-  selectedFile: string | null;
-}
-
-const fileStructure: FileNode[] = [
-  {
-    name: 'app',
-    type: 'folder',
-    path: 'app',
-    isOpen: true,
-    children: [
-      {
-        name: 'layout.tsx',
-        type: 'file',
-        path: 'app/layout.tsx'
-      },
-      {
-        name: 'page.tsx',
-        type: 'file',
-        path: 'app/page.tsx'
-      }
-    ]
+const items: Record<string, Item> = {
+  company: {
+    name: "Company",
+    children: ["engineering", "marketing", "operations"],
   },
-  {
-    name: 'components',
-    type: 'folder',
-    path: 'components',
-    isOpen: true,
-    children: [
-      {
-        name: 'ui',
-        type: 'folder',
-        path: 'components/ui',
-        isOpen: false,
-        children: [
-          { name: 'toast.tsx', type: 'file', path: 'components/ui/toast.tsx' },
-          { name: 'toaster.tsx', type: 'file', path: 'components/ui/toaster.tsx' },
-          { name: 'typescript-editor.tsx', type: 'file', path: 'components/ui/typescript-editor.tsx' }
-        ]
-      }
-    ]
+  engineering: {
+    name: "Engineering",
+    children: ["frontend", "backend", "platform-team"],
   },
-  {
-    name: 'hooks',
-    type: 'folder',
-    path: 'hooks',
-    isOpen: false,
-    children: [
-      {
-        name: 'use-toast.ts',
-        type: 'file',
-        path: 'hooks/use-toast.ts'
-      }
-    ]
-  }
-];
-
-const fileContents: Record<string, string> = {
-  'app/layout.tsx': `import type { Metadata } from "next"
-import { Inter } from "next/font/google"
-import "./globals.css"
-import { Toaster } from "@/components/toaster"
-
-const inter = Inter({ subsets: ["latin"] })
-
-export const metadata: Metadata = {
-  title: "TypeScript Code Editor",
-  description: "A powerful TypeScript code editor with Monaco Editor",
+  frontend: { name: "Frontend", children: ["design-system", "web-platform"] },
+  "design-system": {
+    name: "Design System",
+    children: ["components", "tokens", "guidelines"],
+  },
+  components: { name: "Components" },
+  tokens: { name: "Tokens" },
+  guidelines: { name: "Guidelines" },
+  "web-platform": { name: "Web Platform" },
+  backend: { name: "Backend", children: ["apis", "infrastructure"] },
+  apis: { name: "APIs" },
+  infrastructure: { name: "Infrastructure" },
+  "platform-team": { name: "Platform Team" },
+  marketing: { name: "Marketing", children: ["content", "seo"] },
+  content: { name: "Content" },
+  seo: { name: "SEO" },
+  operations: { name: "Operations", children: ["hr", "finance"] },
+  hr: { name: "HR" },
+  finance: { name: "Finance" },
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+const indent = 20
+
+export default function Component() {
+  const tree = useTree<Item>({
+    initialState: {
+      expandedItems: ["engineering", "frontend", "design-system"],
+    },
+    indent,
+    rootItemId: "company",
+    getItemName: (item) => item.getItemData().name,
+    isItemFolder: (item) => (item.getItemData()?.children?.length ?? 0) > 0,
+    dataLoader: {
+      getItem: (itemId) => items[itemId],
+      getChildren: (itemId) => items[itemId].children ?? [],
+    },
+    features: [syncDataLoaderFeature, hotkeysCoreFeature],
+  })
+
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        {children}
-        <Toaster />
-      </body>
-    </html>
-  )
-}`,
-  'app/page.tsx': `export default function Home() {
-  return (
-    <main>
-      <h1>Welcome to TypeScript Editor</h1>
-    </main>
-  )
-}`,
-  'components/ui/toast.tsx': `import React from "react"
-
-export interface ToastProps {
-  title?: string
-  description?: string
-}
-
-export const Toast: React.FC<ToastProps> = ({ title, description }) => {
-  return (
-    <div className="toast">
-      {title && <h4>{title}</h4>}
-      {description && <p>{description}</p>}
-    </div>
-  )
-}`,
-  'components/ui/toaster.tsx': `import { Toast } from "./toast"
-
-export const Toaster = () => {
-  return (
-    <div className="toaster">
-      <Toast title="Success" description="File saved successfully" />
-    </div>
-  )
-}`,
-  'components/ui/typescript-editor.tsx': `import { useState } from "react"
-import Editor from "@monaco-editor/react"
-
-export const TypeScriptEditor = () => {
-  const [code, setCode] = useState("")
-  
-  return (
-    <Editor
-      height="400px"
-      defaultLanguage="typescript"
-      value={code}
-      onChange={(value) => setCode(value || "")}
-    />
-  )
-}`,
-  'hooks/use-toast.ts': `import { useState } from "react"
-
-interface Toast {
-  id: string
-  title?: string
-  description?: string
-}
-
-export const useToast = () => {
-  const [toasts, setToasts] = useState<Toast[]>([])
-  
-  const toast = ({ title, description }: Omit<Toast, "id">) => {
-    const id = Math.random().toString(36)
-    setToasts(prev => [...prev, { id, title, description }])
-  }
-  
-  return { toast, toasts }
-}`
-};
-
-export const FileTree: React.FC<FileTreeProps> = ({ onFileSelect, selectedFile }) => {
-  const [openFolders, setOpenFolders] = useState<Set<string>>(new Set(['app', 'components']));
-
-  const toggleFolder = (path: string) => {
-    setOpenFolders(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(path)) {
-        newSet.delete(path);
-      } else {
-        newSet.add(path);
-      }
-      return newSet;
-    });
-  };
-
-  const handleFileClick = (path: string) => {
-    const content = fileContents[path] || '';
-    onFileSelect(path, content);
-  };
-
-  const renderNode = (node: FileNode, depth: number = 0) => {
-    const isOpen = openFolders.has(node.path);
-    const isSelected = selectedFile === node.path;
-
-    return (
-      <div key={node.path}>
-        <div
-          className={`flex items-center py-1 px-2 text-sm cursor-pointer hover:bg-vscode-hover ${
-            isSelected ? 'bg-vscode-selected' : ''
-          }`}
-          style={{ paddingLeft: `${depth * 16 + 8}px` }}
-          onClick={() => {
-            if (node.type === 'folder') {
-              toggleFolder(node.path);
-            } else {
-              handleFileClick(node.path);
-            }
-          }}
+    <div className="flex h-full flex-col gap-2 *:first:grow">
+      <div>
+        <Tree
+          className="relative before:absolute before:inset-0 before:-ms-1 before:bg-[repeating-linear-gradient(to_right,transparent_0,transparent_calc(var(--tree-indent)-1px),var(--border)_calc(var(--tree-indent)-1px),var(--border)_calc(var(--tree-indent)))]"
+          indent={indent}
+          tree={tree}
         >
-          {node.type === 'folder' && (
-            <>
-              {isOpen ? (
-                <ChevronDown className="w-4 h-4 mr-1 text-vscode-text-muted" />
-              ) : (
-                <ChevronRight className="w-4 h-4 mr-1 text-vscode-text-muted" />
-              )}
-              {isOpen ? (
-                <FolderOpen className="w-4 h-4 mr-2 text-blue-400" />
-              ) : (
-                <Folder className="w-4 h-4 mr-2 text-blue-400" />
-              )}
-            </>
-          )}
-          {node.type === 'file' && (
-            <>
-              <span className="w-4 mr-1"></span>
-              <File className="w-4 h-4 mr-2 text-vscode-text-muted" />
-            </>
-          )}
-          <span className="text-vscode-text">{node.name}</span>
-          {node.type === 'file' && node.path === 'app/layout.tsx' && (
-            <span className="ml-auto text-green-400 text-xs">+28</span>
-          )}
-          {node.type === 'file' && node.path === 'app/page.tsx' && (
-            <span className="ml-auto text-green-400 text-xs">+6</span>
-          )}
-          {node.type === 'file' && node.path === 'components/ui/toast.tsx' && (
-            <span className="ml-auto text-green-400 text-xs">+112</span>
-          )}
-          {node.type === 'file' && node.path === 'components/ui/toaster.tsx' && (
-            <span className="ml-auto text-green-400 text-xs">+25</span>
-          )}
-          {node.type === 'file' && node.path === 'components/ui/typescript-editor.tsx' && (
-            <span className="ml-auto text-green-400 text-xs">+314</span>
-          )}
-          {node.type === 'file' && node.path === 'hooks/use-toast.ts' && (
-            <span className="ml-auto text-green-400 text-xs">+187</span>
-          )}
-        </div>
-        {node.type === 'folder' && isOpen && node.children && (
-          <div>
-            {node.children.map(child => renderNode(child, depth + 1))}
-          </div>
-        )}
+          {tree.getItems().map((item) => {
+            return (
+              <TreeItem key={item.getId()} item={item}>
+                <TreeItemLabel className="before:bg-neutral-900 relative before:absolute before:inset-x-0 before:-inset-y-0.5 before:-z-10">
+                  <span className="flex items-center gap-2">
+                    {item.isFolder() ? (
+                      item.isExpanded() ? (
+                        <FolderOpenIcon className="text-muted-foreground pointer-events-none size-4" />
+                      ) : (
+                        <FolderIcon className="text-muted-foreground pointer-events-none size-4" />
+                      )
+                    ) : (
+                      <FileIcon className="text-muted-foreground pointer-events-none size-4" />
+                    )}
+                    {item.getItemName()}
+                  </span>
+                </TreeItemLabel>
+              </TreeItem>
+            )
+          })}
+        </Tree>
       </div>
-    );
-  };
 
-  return (
-    <div className="w-80 bg-neutral-950 border-r border-neutral-900 h-full overflow-y-auto">
-      <div className="py-2">
-        {fileStructure.map(node => renderNode(node))}
-      </div>
+      <p
+        aria-live="polite"
+        role="region"
+        className="text-muted-foreground mt-2 text-xs"
+      >
+        Basic tree with icons ∙{" "}
+        <a
+          href="https://headless-tree.lukasbach.com"
+          className="hover:text-foreground underline"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          API
+        </a>
+      </p>
     </div>
-  );
-};
+  )
+}
+
+

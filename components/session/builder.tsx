@@ -34,7 +34,7 @@ const Builder = () => {
   return (
     <div className="w-full z-20 flex flex-col items-center relative justify-center gap-3 sm:gap-4">
       {/* Background Text */}
-      <div className="absolute text-transparent bg-clip-text bg-gradient-to-b from-white/20 via-white/5 to-[#ffffff00] top-[-40px] sm:top-[-30px] xl:top-[-40px] left-1/2 -translate-x-1/2 -translate-y-1/2 text-[80px] sm:text-[120px] md:text-[160px] xl:text-[200px] font-[Jost] select-none pointer-events-none z-0 whitespace-nowrap">
+      <div className="absolute text-transparent bg-clip-text bg-gradient-to-b bg-blur from-[#84778C]/80 via-[#84778C]/50 to-[#ffffff00] top-[-40px] sm:top-[-30px] xl:top-[-40px] left-1/2 -translate-x-1/2 -translate-y-1/2 text-[80px] sm:text-[120px] md:text-[160px] xl:text-[200px] font-[Jost] select-none pointer-events-none z-0 whitespace-nowrap">
         Sanka
       </div>
 
@@ -62,19 +62,19 @@ const Builder = () => {
             {loading ? (
               <Loader2 className="animate-spin text-black w-4 h-4 sm:w-5 sm:h-5" />
             ) : (
-              <ArrowUp className="text-black w-4 h-4 sm:w-5 sm:h-5" />
+              <ArrowUp className="text-black w-4 h-4 sm:w-5 sm:h-5 cursor-pointer" />
             )}
           </button>
         </div>
       </div>
 
       {/* Category Selector */}
-      <div className="flex items-center justify-between p-1.5 sm:p-2 rounded-full relative bg-white/5 backdrop-blur-md w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto">
+      <div className="flex items-center justify-between p-1.5 sm:p-2 rounded-full relative bg-black/40 backdrop-blur-xl w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto">
         {Object.entries(categories).map(([key, { label }]) => (
           <div
             key={key}
             onClick={() => setActiveCategory(key as keyof typeof categories)}
-            className="relative cursor-pointer w-full group text-center py-1.5 sm:py-2 overflow-visible hover:scale-105 transition-all duration-300 ease-[cubic-bezier(0.175, 0.885, 0.32, 1.275)] px-2 sm:px-4"
+            className="relative cursor-pointer w-full group text-center py-1.5 sm:py-2 overflow-visible transition-all duration-300 ease-[cubic-bezier(0.175, 0.885, 0.32, 1.275)] px-2 sm:px-4"
           >
             {activeCategory === key && (
               <motion.div

@@ -13,12 +13,12 @@ interface OpenFile {
 }
 
 interface CodeConfig {
-  project: {
-    name: string;
-    description: string;
-    stack: string[];
-    packageManager: "npm" | "pnpm" | "yarn" | string;
-  };
+  // project: {
+  //   name: string;
+  //   description: string;
+  //   stack: string[];
+  //   packageManager: "npm" | "pnpm" | "yarn" | string;
+  // };
   files: {
     path: string;
     type: "text" | "binary";
@@ -26,123 +26,25 @@ interface CodeConfig {
     executable: boolean;
     content: string;
   }[];
-  scripts: {
-    dev: string;
-    build: string;
-    start: string;
-    [key: string]: string;
-  };
-  run: {
-    install: string;
-    dev: string;
-    build: string;
-    start: string;
-    [key: string]: string;
-  };
+  // scripts: {
+  //   dev: string;
+  //   build: string;
+  //   start: string;
+  //   [key: string]: string;
+  // };
+  // run: {
+  //   install: string;
+  //   dev: string;
+  //   build: string;
+  //   start: string;
+  //   [key: string]: string;
+  // };
 }
 
-const config: CodeConfig = {
-  project: {
-    name: "todo-app",
-    description: "Minimal Next.js + TypeScript + Tailwind TODO app scaffold",
-    stack: ["nextjs", "typescript", "tailwind"],
-    packageManager: "pnpm",
-  },
-  files: [
-    {
-      path: "package.json",
-      type: "text",
-      language: "json",
-      executable: false,
-      content:
-        '{\n  "name": "todo-app",\n  "version": "0.1.0",\n  "private": true,\n  "scripts": {\n    "dev": "next dev",\n    "build": "next build",\n    "start": "next start",\n    "lint": "next lint"\n  },\n  "dependencies": {\n    "next": "^14.0.0",\n    "react": "^18.2.0",\n    "react-dom": "^18.2.0",\n    "clsx": "^1.2.1"\n  },\n  "devDependencies": {\n    "typescript": "^5.0.0",\n    "tailwindcss": "^3.5.0",\n    "postcss": "^8.4.0",\n    "autoprefixer": "^10.4.0",\n    "eslint": "^8.0.0",\n    "@types/react": "^18.0.0"\n  }\n}\n',
-    },
-    {
-      path: "tsconfig.json",
-      type: "text",
-      language: "json",
-      executable: false,
-      content:
-        '{\n  "compilerOptions": {\n    "target": "ES2022",\n    "lib": ["DOM", "DOM.Iterable", "ESNext"],\n    "allowJs": false,\n    "skipLibCheck": true,\n    "strict": true,\n    "forceConsistentCasingInFileNames": true,\n    "module": "ESNext",\n    "moduleResolution": "Node",\n    "resolveJsonModule": true,\n    "isolatedModules": true,\n    "noEmit": true,\n    "jsx": "react-jsx"\n  },\n  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],\n  "exclude": ["node_modules"]\n}\n',
-    },
-    {
-      path: "postcss.config.js",
-      type: "text",
-      language: "javascript",
-      executable: false,
-      content:
-        "module.exports = {\n  plugins: {\n    tailwindcss: {},\n    autoprefixer: {}\n  }\n};\n",
-    },
-    {
-      path: "tailwind.config.js",
-      type: "text",
-      language: "javascript",
-      executable: false,
-      content:
-        'module.exports = {\n  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./pages/**/*.{ts,tsx}"],\n  theme: { extend: {} },\n  plugins: []\n};\n',
-    },
-    {
-      path: "README.md",
-      type: "text",
-      language: "markdown",
-      executable: false,
-      content:
-        "# todo-app\\n\\nMinimal Next.js + TypeScript + Tailwind TODO app scaffold.\\n\\n**Install**\\n```bash\\npnpm install\\npnpm dev\\n```\\n",
-    },
-    {
-      path: "app/layout.tsx",
-      type: "text",
-      language: "typescript",
-      executable: false,
-      content:
-        "import './globals.css';\\nimport React from 'react';\\nexport const metadata = { title: 'Todo App' };\\nexport default function RootLayout({ children }: { children: React.ReactNode }) {\\n  return (\\n    <html lang=\"en\">\\n      <body>\\n        {children}\\n      </body>\\n    </html>\\n  );\\n}\\n",
-    },
-    {
-      path: "app/page.tsx",
-      type: "text",
-      language: "typescript",
-      executable: false,
-      content:
-        'import React from \'react\';\\nimport TodoApp from \'../components/TodoApp\';\\nexport default function Page() {\\n  return (\\n    <main className="min-h-screen bg-neutral-900 text-white p-6">\\n      <div className="max-w-2xl mx-auto">\\n        <h1 className="text-2xl font-semibold mb-4">Todo</h1>\\n        <TodoApp />\\n      </div>\\n    </main>\\n  );\\n}\\n',
-    },
-    {
-      path: "components/TodoApp.tsx",
-      type: "text",
-      language: "typescript",
-      executable: false,
-      content:
-        'use client\';\\nimport React, { useState, useEffect } from \'react\';\\nexport default function TodoApp() {\\n  const [items, setItems] = useState<{id:string;text:string;done:boolean}[]>(() => {\\n    try { return JSON.parse(localStorage.getItem(\'todos\') || \'[]\'); } catch { return []; }\\n  });\\n  const [text, setText] = useState(\'\');\\n  useEffect(() => { localStorage.setItem(\'todos\', JSON.stringify(items)); }, [items]);\\n  const add = () => { if (!text.trim()) return; setItems(s => [...s, { id: Date.now().toString(), text: text.trim(), done: false }]); setText(\'\'); }\\n  const toggle = (id:string) => setItems(s => s.map(i => i.id===id?{...i,done:!i.done}:i));\\n  const remove = (id:string) => setItems(s => s.filter(i=>i.id!==id));\\n  return (\\n    <div className="bg-neutral-800 rounded p-4">\\n      <div className="flex gap-2 mb-4">\\n        <input value={text} onChange={e=>setText(e.target.value)} placeholder="Add todo" className="flex-1 px-3 py-2 rounded bg-neutral-700 outline-none" />\\n        <button onClick={add} className="px-3 py-2 bg-indigo-600 rounded">Add</button>\\n      </div>\\n      <ul className="space-y-2">\\n        {items.map(i=> (\\n          <li key={i.id} className="flex items-center justify-between bg-neutral-900 px-3 py-2 rounded">\\n            <div className="flex items-center gap-3">\\n              <input type="checkbox" checked={i.done} onChange={()=>toggle(i.id)} />\\n              <span className={i.done? \'line-through text-neutral-500\':\'text-white\'}>{i.text}</span>\\n            </div>\\n            <button onClick={()=>remove(i.id)} className="text-xs text-neutral-400 hover:text-white">Delete</button>\\n          </li>\\n        ))}\\n      </ul>\\n    </div>\\n  );\\n}\\n',
-    },
-    {
-      path: "components/index.ts",
-      type: "text",
-      language: "typescript",
-      executable: false,
-      content: "export { default as TodoApp } from './TodoApp';\\n",
-    },
-    {
-      path: "styles/globals.css",
-      type: "text",
-      language: "css",
-      executable: false,
-      content:
-        "@tailwind base;\\n@tailwind components;\\n@tailwind utilities;\\nhtml,body,#root{height:100%}\\nbody{background:#090909}\n",
-    },
-  ],
-  scripts: {
-    dev: "next dev",
-    build: "next build",
-    start: "next start",
-  },
-  run: {
-    install: "pnpm install",
-    dev: "pnpm dev",
-    build: "pnpm build",
-    start: "pnpm start",
-  },
-};
 
-export const CodeInterface = () => {
+
+
+export const CodeInterface = (config: CodeConfig) => {
   const [openFiles, setOpenFiles] = useState<OpenFile[]>([]);
   const [currentFile, setCurrentFile] = useState<OpenFile | null>(null);
 
@@ -192,7 +94,9 @@ export const CodeInterface = () => {
       )
     );
     setCurrentFile((prev) =>
-      prev && normalize(prev.path) === normalized ? { ...prev, content, isDirty: true } : prev
+      prev && normalize(prev.path) === normalized
+        ? { ...prev, content, isDirty: true }
+        : prev
     );
   }, []);
 
@@ -218,7 +122,9 @@ export const CodeInterface = () => {
     if (openFiles.length === 0) {
       // if config has a common entry point, open it, else open a tiny default
       const prefer = config?.files?.find((f) =>
-        ["app/layout.tsx", "app/page.tsx", "index.tsx"].includes(normalize(f.path))
+        ["app/layout.tsx", "app/page.tsx", "index.tsx"].includes(
+          normalize(f.path)
+        )
       );
       if (prefer) {
         openFileInEditor(prefer.path);
@@ -272,7 +178,9 @@ export const CodeInterface = () => {
                 config={config ?? { files: [] }}
                 activeFile={currentFile.path}
                 onFileOpen={(p) => openFileInEditor(p)}
-                onContentChange={(path, content) => handleContentChange(path, content)}
+                onContentChange={(path, content) =>
+                  handleContentChange(path, content)
+                }
               />
             ) : (
               <div className="h-full bg-neutral-950 flex items-center justify-center">

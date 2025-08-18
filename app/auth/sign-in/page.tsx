@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { signIn } from "@/lib/auth-client";
+import { signIn } from "@/lib/auth/auth-client";
 
 export default function SignInPage() {
   const [loading, setLoading] = useState<"google" | "github" | null>(null);

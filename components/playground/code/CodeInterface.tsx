@@ -41,29 +41,22 @@ interface CodeConfig {
   // };
 }
 
-
-
-
 export const CodeInterface = (config: CodeConfig) => {
   const [openFiles, setOpenFiles] = useState<OpenFile[]>([]);
   const [currentFile, setCurrentFile] = useState<OpenFile | null>(null);
 
-  // Normalize path helper
   const normalize = (p: string) => p.replace(/^\/+/, "");
 
-  // The function the editor tree will call to open/focus a file.
   const openFileInEditor = useCallback(
     (path: string) => {
       const normalized = normalize(path);
 
-      // If open already, just focus it
       const existing = openFiles.find((f) => normalize(f.path) === normalized);
       if (existing) {
         setCurrentFile(existing);
         return existing;
       }
 
-      // Find file content in config
       const fileFromConfig = (config?.files ?? []).find(
         (f) => normalize(f.path) === normalized
       );
@@ -85,7 +78,6 @@ export const CodeInterface = (config: CodeConfig) => {
     [config, openFiles]
   );
 
-  // Called by Monaco when user edits a file
   const handleContentChange = useCallback((path: string, content: string) => {
     const normalized = normalize(path);
     setOpenFiles((prev) =>
@@ -100,13 +92,11 @@ export const CodeInterface = (config: CodeConfig) => {
     );
   }, []);
 
-  // Close a file/tab
   const handleClose = useCallback(
     (path: string) => {
       const normalized = normalize(path);
       setOpenFiles((prev) => {
         const next = prev.filter((f) => normalize(f.path) !== normalized);
-        // if closing the active file, switch to last open file or null
         if (currentFile && normalize(currentFile.path) === normalized) {
           const last = next[next.length - 1] ?? null;
           setCurrentFile(last);
@@ -117,10 +107,8 @@ export const CodeInterface = (config: CodeConfig) => {
     [currentFile]
   );
 
-  // Ensure at least one file is open on mount:
   useEffect(() => {
     if (openFiles.length === 0) {
-      // if config has a common entry point, open it, else open a tiny default
       const prefer = config?.files?.find((f) =>
         ["app/layout.tsx", "app/page.tsx", "index.tsx"].includes(
           normalize(f.path)
@@ -131,10 +119,8 @@ export const CodeInterface = (config: CodeConfig) => {
       } else if (config?.files?.length) {
         openFileInEditor(config.files[0].path);
       } else {
-        // fallback default file
         const defaultPath = "app/layout.tsx";
         const defaultContent = `import './globals.css';\nexport default function RootLayout({ children }: { children: React.ReactNode }) { return <html><body>{children}</body></html> }`;
-        // temporarily add to openFiles
         const newFile: OpenFile = {
           path: defaultPath,
           name: "layout.tsx",
@@ -145,14 +131,12 @@ export const CodeInterface = (config: CodeConfig) => {
         setCurrentFile(newFile);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config]);
 
   return (
     <div className="h-screen bg-neutral-950 text-white flex flex-col">
       <div className="flex flex-1 overflow-hidden">
         <div className="w-[260px] border-r border-neutral-800 bg-neutral-900 overflow-y-auto">
-          {/* pass config & activeFile to tree; tree calls onFileOpen which uses openFileInEditor */}
           <FileTree
             config={config ?? { files: [] }}
             activeFile={currentFile?.path ?? null}
@@ -163,7 +147,6 @@ export const CodeInterface = (config: CodeConfig) => {
         </div>
 
         <div className="flex-1 flex flex-col">
-          {/* Tabs / breadcrumb area */}
           {currentFile && (
             <EditorBreadcrumb
               path={currentFile.path}

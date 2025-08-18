@@ -2,41 +2,17 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
 
-// interface Message {
-//   id: string;
-//   content: string;
-//   role: "user" | "assistant";
-//   timestamp: Date;
-// }
-
-const Chat = ({ category }: { category: string }) => {
-  // const [messages, setMessages] = useState<Message[]>([
-  //   {
-  //     id: "1",
-  //     content:
-  //       "Hello! I'm Gemini, your AI assistant. How can I help you today?",
-  //     role: "assistant",
-  //     timestamp: new Date(),
-  //   },
-  // ]);
+const Chat = ({ initialMessage }: { initialMessage: string }) => {
   const [input, setInput] = useState("");
-  // const [isLoading, setIsLoading] = useState(false);
-
-  const searchParams = useSearchParams();
-  const initialMessage = searchParams.get("q");
-
 
   return (
     <div className="h-screen bg-[#0a0a0a] text-white flex flex-col rounded-lg border border-neutral-800 overflow-hidden">
-      {/* scrollable messages */}
       <div className="relative flex-1 overflow-y-auto" id="scroll-container">
         <div className="absolute top-0 left-0 w-full h-8 bg-gradient-to-b from-[#0a0a0a] to-transparent pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-[#0a0a0a] to-transparent pointer-events-none"></div>
 
         <div className="px-4 py-4 space-y-6 max-w-3xl mx-auto">
-          {/* Example: show initialMessage if exists */}
           {initialMessage && (
             <div className="flex flex-col items-end group">
               <div className="flex items-center gap-2 mb-1">
@@ -62,7 +38,6 @@ const Chat = ({ category }: { category: string }) => {
             </div>
           )}
 
-          {/* assistant welcome */}
           <div className="flex flex-col items-start group">
             <div className="flex items-center gap-2 mb-1">
               <span className="w-6 h-6 rounded-full overflow-hidden flex justify-center items-center bg-neutral-600 p-0.5">
@@ -84,7 +59,6 @@ const Chat = ({ category }: { category: string }) => {
         </div>
       </div>
 
-      {/* input */}
       <div className="border-t border-neutral-800 p-3 flex items-center gap-2">
         <textarea
           rows={1}

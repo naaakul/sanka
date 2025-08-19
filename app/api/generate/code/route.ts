@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
-import { SCAFFOLD_SYSTEM_PROMPT } from "@/lib/prompts/scaffoldPrompt";
+import { SCAFFOLD_SYSTEM_PROMPT } from "@/lib/prompts/scaffold-prompt";
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY!,

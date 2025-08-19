@@ -1,15 +1,22 @@
-FROM node:21.slim
+FROM node:21-slim
 
-RUN apt-get update && apt-get install -y curl && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y git build-essential python3 make g++ libvips && \
+    rm -rf /var/lib/apt/lists/*
 
-COPY compile_play.sh /compile_play.sh
-RUN chmod +x /compile_play.sh
+WORKDIR /home/user
 
-WORKDIR /home/user/nextjs-app
+RUN git clone https://github.com/wizzzzzzzard/box.git
 
-RUN npx --yes create-next-app@15.3.3 . --yes
+WORKDIR /home/user/box
 
-RUN npx --yes shadcn@2.6.3 init --yes -b neutral --force
-RUN npx --yes shadcn@2.6.3 add --add -yes
+RUN npm install --no-audit --progress=false
 
-RUN mv /home/user/nextjs-app/* /home/user/ && rm -rf /home/user/nextjs-app
+RUN npm pkg set scripts.start="next dev"
+
+RUN npx --yes shadcn@2.6.3 init --yes -b neutral --force || true
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]
+

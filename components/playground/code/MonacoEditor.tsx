@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -111,7 +112,7 @@ declare module 'next/font/google' {
     } catch (err) {
       // If language APIs aren't present, ignore gracefully
       // (some minimal Monaco builds may not expose `typescript` etc)
-      // console.warn("monaco language setup skipped", err);
+      console.warn("monaco language setup skipped", err);
     }
   };
 

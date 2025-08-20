@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     });
 
     await Promise.all(
-      files.map((f: any) =>
+      files.map((f) =>
         sandbox.files.write(`/home/user/box/${f.path}`, f.content)
       )
     );
@@ -35,10 +35,11 @@ export async function POST(req: Request) {
     const url = `https://${host}`;
 
     return NextResponse.json({ success: true, previewUrl: url });
-  } catch (err: any) {
+  } catch (err) {
     console.error("Sandbox error:", err);
+    const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
     return NextResponse.json(
-      { success: false, error: err.message },
+      { success: false, error: errorMessage },
       { status: 500 }
     );
   }

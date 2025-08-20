@@ -76,7 +76,7 @@ function buildItemsFromConfig(config: Config): Record<string, ItemData> {
     const segments = normalized.split("/").filter(Boolean);
 
     // Walk segments and create nodes
-    let prefixParts: string[] = [];
+    const prefixParts: string[] = [];
     for (let i = 0; i < segments.length; i++) {
       prefixParts.push(segments[i]);
       const id = prefixParts.join("/"); // folder or file id
@@ -104,7 +104,13 @@ function buildItemsFromConfig(config: Config): Record<string, ItemData> {
       const parentId = prefixParts.slice(0, -1).join("/") || ROOT_ID;
       if (!map[parentId]) {
         // create parent if missing
-        map[parentId] = { name: parentId === ROOT_ID ? "/" : prefixParts.slice(0, -1).slice(-1)[0] || "/", children: [] };
+        map[parentId] = {
+          name:
+            parentId === ROOT_ID
+              ? "/"
+              : prefixParts.slice(0, -1).slice(-1)[0] || "/",
+          children: [],
+        };
       }
       if (!map[parentId].children) map[parentId].children = [];
       if (!map[parentId].children!.includes(id)) {
@@ -120,7 +126,10 @@ function buildItemsFromConfig(config: Config): Record<string, ItemData> {
  * Computes the set of folder IDs that should be expanded:
  * includes every ancestor folder of the activeFile so that active file is visible.
  */
-function computeExpandedItems(map: Record<string, ItemData>, activeFile?: string | null) {
+function computeExpandedItems(
+  map: Record<string, ItemData>,
+  activeFile?: string | null
+) {
   if (!activeFile) {
     // If no active file, expand nothing (or you can choose defaults)
     return [];
@@ -134,11 +143,18 @@ function computeExpandedItems(map: Record<string, ItemData>, activeFile?: string
   return expanded;
 }
 
-export default function FileTree({ config, activeFile = null, onFileOpen }: FileTreeProps) {
+export default function FileTree({
+  config,
+  activeFile = null,
+  onFileOpen,
+}: FileTreeProps) {
   const items = useMemo(() => buildItemsFromConfig(config), [config]);
 
   // compute expanded items from activeFile so the open file is visible
-  const expandedItems = useMemo(() => computeExpandedItems(items, activeFile), [items, activeFile]);
+  const expandedItems = useMemo(
+    () => computeExpandedItems(items, activeFile),
+    [items, activeFile]
+  );
 
   const tree = useTree<ItemData>({
     indent,
@@ -169,7 +185,7 @@ export default function FileTree({ config, activeFile = null, onFileOpen }: File
             // item id equals node path (or ROOT_ID)
             const id = item.getId();
             const isFolder = item.isFolder();
-            const name = item.getItemName();
+            // const name = item.getItemName();
             const isActive = activeFile && id === activeFile;
             // Last segment for display
             const label = id === ROOT_ID ? "/" : getLastSegment(id);
@@ -179,7 +195,9 @@ export default function FileTree({ config, activeFile = null, onFileOpen }: File
                 <TreeItemLabel
                   // visually indicate active file
                   className={`before:bg-neutral-900 relative before:absolute before:inset-x-0 before:-inset-y-0.5 before:-z-10 ${
-                    isActive ? "bg-neutral-800 text-white" : "text-muted-foreground"
+                    isActive
+                      ? "bg-neutral-800 text-white"
+                      : "text-muted-foreground"
                   }`}
                   // Prevent renaming/select default behaviours
                   onClick={(e: React.MouseEvent) => {
@@ -191,7 +209,6 @@ export default function FileTree({ config, activeFile = null, onFileOpen }: File
                       try {
                         // item.select() exists on item API in many headless-tree builds
                         // if not available, it's safe to ignore
-                        // @ts-ignore
                         if (typeof item.select === "function") item.select();
                       } catch {}
                     }
@@ -210,7 +227,9 @@ export default function FileTree({ config, activeFile = null, onFileOpen }: File
                     <span className="truncate">{label}</span>
                     {/* file marker */}
                     {!isFolder && activeFile === id && (
-                      <span className="ml-2 text-xs text-neutral-400">open</span>
+                      <span className="ml-2 text-xs text-neutral-400">
+                        open
+                      </span>
                     )}
                   </span>
                 </TreeItemLabel>
@@ -220,7 +239,11 @@ export default function FileTree({ config, activeFile = null, onFileOpen }: File
         </Tree>
       </div>
 
-      <p aria-live="polite" role="region" className="text-muted-foreground mt-2 text-xs">
+      <p
+        aria-live="polite"
+        role="region"
+        className="text-muted-foreground mt-2 text-xs"
+      >
         Explorer generated from config ∙{" "}
         <a
           href="https://headless-tree.lukasbach.com"

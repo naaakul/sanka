@@ -109,7 +109,7 @@ export const CodeInterface = (config: CodeConfig) => {
         setCurrentFile(newFile);
       }
     }
-  }, [config]);
+  }, [config, openFiles.length, openFileInEditor, setOpenFiles, setCurrentFile]);
 
   return (
     <div className="h-screen bg-neutral-950 text-white flex flex-col">

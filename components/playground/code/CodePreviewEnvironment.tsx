@@ -20,10 +20,9 @@ const categories = {
 
 interface NextIDEInterfaceProps {
   config: CodeConfig;
-  loading: boolean;
 }
 
-const NextIDEInterface: React.FC<NextIDEInterfaceProps> = ({config, loading}) => {
+const NextIDEInterface: React.FC<NextIDEInterfaceProps> = ({config}) => {
   const [viewMode, setViewMode] = useState<"ide" | "preview">("ide");
 
   return (

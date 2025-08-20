@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+
 // import React from "react";
 
 // const background = () => {
@@ -10,6 +13,7 @@
 // };
 
 // export default background;
+
 
 "use client";
 

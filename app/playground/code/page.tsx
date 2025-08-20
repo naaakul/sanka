@@ -6,6 +6,7 @@ import PlaygroundNavbar from "@/components/playground/PlaygroundNavbar";
 import { PlaygroundPanels } from "@/components/playground/PlaygroundPanels";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Suspense } from "react";
 
 interface CodeConfig {
   files: {
@@ -134,8 +135,9 @@ const Page = () => {
   const [config, setConfig] = useState<CodeConfig>(co);
   const searchParams = useSearchParams();
   const initialMessage = searchParams.get("q");
-  const [prompt, setPrompt] = useState(initialMessage);
-  const [loading, setLoading] = useState(false);
+  // const [prompt, setPrompt] = useState(initialMessage);
+  const prompt = initialMessage;
+  // const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!prompt) return;
@@ -148,7 +150,7 @@ const Page = () => {
     }
 
     const fetchData = async () => {
-      setLoading(true);
+      // setLoading(true);
       try {
         const res = await fetch("/api/generate/code", {
           method: "POST",
@@ -164,7 +166,7 @@ const Page = () => {
       } catch (err) {
         console.error(err);
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     };
 
@@ -172,24 +174,26 @@ const Page = () => {
   }, [prompt]);
 
   return (
-    <div className="h-screen flex flex-col">
-      <PlaygroundNavbar />
-      <PlaygroundPanels
-        leftPanel={
-          <div className="pl-2 pb-2">
-            <Chat initialMessage={initialMessage ?? ""} />
-          </div>
-        }
-        rightPanel={
-          <div className="pr-2 pb-2">
-            <NextIDEInterface config={config} loading={loading} />
-          </div>
-        }
-        defaultLeftWidth={50}
-        minLeftWidth={30}
-        maxLeftWidth={60}
-      />
-    </div>
+    <Suspense>
+      <div className="h-screen flex flex-col">
+        <PlaygroundNavbar />
+        <PlaygroundPanels
+          leftPanel={
+            <div className="pl-2 pb-2">
+              <Chat initialMessage={initialMessage ?? ""} />
+            </div>
+          }
+          rightPanel={
+            <div className="pr-2 pb-2">
+              <NextIDEInterface config={config} />
+            </div>
+          }
+          defaultLeftWidth={50}
+          minLeftWidth={30}
+          maxLeftWidth={60}
+        />
+      </div>
+    </Suspense>
   );
 };
 

@@ -16,12 +16,12 @@ const Chat = ({ initialMessage }: { initialMessage: string }) => {
           {initialMessage && (
             <div className="flex flex-col items-end group">
               <div className="flex items-center gap-2 mb-1">
-                <span className="w-6 h-6 rounded-full overflow-hidden">
-                  <img
+                <span className="w-6 h-6 bg-white rounded-full overflow-hidden">
+                  {/* <img
                     src="https://vercel.com/api/www/avatar/e51bb2f302e32e0f30bf0e7316211783274e8ce0"
                     className="w-full h-full object-cover"
                     alt="User"
-                  />
+                  /> */}
                 </span>
               </div>
               <div className="relative bg-neutral-800 px-3 py-2 rounded-2xl max-w-[80%] text-sm">

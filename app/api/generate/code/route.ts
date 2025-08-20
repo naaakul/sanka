@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
 
     const config = JSON.parse(match[0]);
     return NextResponse.json(config);
-  } catch (err: any) {
+  } catch (err) {
     console.error("Error in /api/generate:", err);
     return NextResponse.json({ error: "Failed to generate" }, { status: 500 });
   }

@@ -11,8 +11,6 @@
 
 // export default background;
 
-
-
 "use client";
 
 import { useEffect } from "react";
@@ -39,12 +37,15 @@ const UnicornStudio = () => {
   }, []);
 
   return (
-    <div
-      data-us-project="cOmwWnLRdXHHE4l2CkxK"
-      className="w-full h-full absolute inset-0"
-    ></div>
+    <div className="absolute inset-0 w-full h-full overflow-hidden">
+      <div
+        // data-us-project="cOmwWnLRdXHHE4l2CkxK"
+        data-us-project="uOTm5yzh3ILhmmaCwRXz"  
+        // className="absolute inset-0 -top-20 w-full scale-[1.19] overflow-hidden"
+        className="absolute inset-0 w-full h-[120vh] overflow-hidden"
+      ></div>
+    </div>
   );
 };
 
 export default UnicornStudio;
-

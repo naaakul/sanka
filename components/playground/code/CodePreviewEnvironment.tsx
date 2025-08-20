@@ -9,9 +9,6 @@ import { motion } from "framer-motion";
 interface CodeConfig {
   files: {
     path: string;
-    type: "text" | "binary";
-    language: string;
-    executable: boolean;
     content: string;
   }[];
 }
@@ -27,7 +24,6 @@ interface NextIDEInterfaceProps {
 }
 
 const NextIDEInterface: React.FC<NextIDEInterfaceProps> = ({config, loading}) => {
-  const currentCode = "";
   const [viewMode, setViewMode] = useState<"ide" | "preview">("ide");
 
   return (
@@ -72,7 +68,7 @@ const NextIDEInterface: React.FC<NextIDEInterfaceProps> = ({config, loading}) =>
         {viewMode === "ide" ? (
           <CodeInterface {...config} />
         ) : (
-          <PreviewPane code={currentCode} fileName={"page.tsx"} />
+          <PreviewPane {...config}/>
         )}
       </div>
     </div>

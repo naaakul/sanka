@@ -11,6 +11,8 @@ const categories = {
   video: { label: "Video" },
 };
 
+const clickSound = typeof Audio !== "undefined" ? new Audio("https://kprverse.com/audio/UI_menu_rollover.mp3") : null;
+
 const Builder = () => {
   const [activeCategory, setActiveCategory] =
     useState<keyof typeof categories>("code");
@@ -31,12 +33,22 @@ const Builder = () => {
     setLoading(false);
   }, [pathname, searchParams]);
 
+  const handleCategoryClick = (key: keyof typeof categories) => {
+    setActiveCategory(key);
+
+    // Play sound on category change
+    if (clickSound) {
+      clickSound.currentTime = 0; // reset if clicked fast
+      clickSound.play();
+    }
+  };
+
   return (
     <div className="w-full z-20 flex flex-col items-center relative justify-center gap-3 sm:gap-4">
       {/* Background Text */}
-      <div className="absolute text-transparent bg-clip-text bg-gradient-to-b bg-blur from-[#84778C]/80 via-[#84778C]/50 to-[#ffffff00] top-[-40px] sm:top-[-30px] xl:top-[-40px] left-1/2 -translate-x-1/2 -translate-y-1/2 text-[80px] sm:text-[120px] md:text-[160px] xl:text-[200px] font-[Jost] select-none pointer-events-none z-0 whitespace-nowrap">
+      {/* <div className="absolute text-transparent bg-clip-text bg-gradient-to-b bg-blur from-[#84778C]/80 via-[#84778C]/50 to-[#ffffff00] top-[-40px] sm:top-[-30px] xl:top-[-40px] left-1/2 -translate-x-1/2 -translate-y-1/2 text-[80px] sm:text-[120px] md:text-[160px] xl:text-[200px] font-[Jost] select-none pointer-events-none z-0 whitespace-nowrap">
         Sanka
-      </div>
+      </div> */}
 
       {/* Search Input */}
       <div className="w-full max-w-xs sm:max-w-md md:max-w-lg xl:max-w-3xl z-30 h-10 sm:h-12 bg-background rounded-full border border-[#292929] flex items-center">
@@ -70,37 +82,37 @@ const Builder = () => {
 
       {/* Category Selector */}
       <div className="flex items-center justify-between p-1.5 sm:p-2 rounded-full relative bg-black/40 backdrop-blur-xl w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto">
-        {Object.entries(categories).map(([key, { label }]) => (
-          <div
-            key={key}
-            onClick={() => setActiveCategory(key as keyof typeof categories)}
-            className="relative cursor-pointer w-full group text-center py-1.5 sm:py-2 overflow-visible transition-all duration-300 ease-[cubic-bezier(0.175, 0.885, 0.32, 1.275)] px-2 sm:px-4"
+      {Object.entries(categories).map(([key, { label }]) => (
+        <div
+          key={key}
+          onClick={() => handleCategoryClick(key as keyof typeof categories)}
+          className="relative cursor-pointer w-full group text-center py-1.5 sm:py-2 overflow-visible transition-all duration-300 ease-[cubic-bezier(0.175, 0.885, 0.32, 1.275)] px-2 sm:px-4"
+        >
+          {activeCategory === key && (
+            <motion.div
+              layoutId="activeCategory"
+              className="absolute inset-0 bg-[#0A0A0A] rounded-full"
+              transition={{
+                type: "spring",
+                stiffness: 120,
+                damping: 10,
+                mass: 0.2,
+                ease: [0, 1, 0.35, 0],
+              }}
+            />
+          )}
+          <span
+            className={`relative flex whitespace-nowrap text-white text-xs sm:text-sm items-center gap-2 justify-center ${
+              activeCategory === key
+                ? "text-primary-foreground"
+                : "text-foreground"
+            }`}
           >
-            {activeCategory === key && (
-              <motion.div
-                layoutId="activeCategory"
-                className="absolute inset-0 bg-[#0A0A0A] rounded-full"
-                transition={{
-                  type: "spring",
-                  stiffness: 120,
-                  damping: 10,
-                  mass: 0.2,
-                  ease: [0, 1, 0.35, 0],
-                }}
-              />
-            )}
-            <span
-              className={`relative flex whitespace-nowrap text-white text-xs sm:text-sm items-center gap-2 justify-center ${
-                activeCategory === key
-                  ? "text-primary-foreground"
-                  : "text-foreground"
-              }`}
-            >
-              {label}
-            </span>
-          </div>
-        ))}
-      </div>
+            {label}
+          </span>
+        </div>
+      ))}
+    </div>
     </div>
   );
 };

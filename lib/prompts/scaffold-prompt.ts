@@ -6,9 +6,6 @@ You must ONLY output a single JSON object that strictly follows this schema:
   "files": [
     {
       "path": string,
-      "type": "text",
-      "language": string,
-      "executable": boolean,
       "content": string
     }
   ]

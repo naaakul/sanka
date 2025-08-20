@@ -13,32 +13,10 @@ interface OpenFile {
 }
 
 interface CodeConfig {
-  // project: {
-  //   name: string;
-  //   description: string;
-  //   stack: string[];
-  //   packageManager: "npm" | "pnpm" | "yarn" | string;
-  // };
   files: {
     path: string;
-    type: "text" | "binary";
-    language: string;
-    executable: boolean;
     content: string;
   }[];
-  // scripts: {
-  //   dev: string;
-  //   build: string;
-  //   start: string;
-  //   [key: string]: string;
-  // };
-  // run: {
-  //   install: string;
-  //   dev: string;
-  //   build: string;
-  //   start: string;
-  //   [key: string]: string;
-  // };
 }
 
 export const CodeInterface = (config: CodeConfig) => {

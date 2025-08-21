@@ -62,13 +62,15 @@ export default function Notify() {
         ></div>
       </div>
       <div className="max-w-md w-full text-center p-6 rounded-2xl bg-neutral-900/75 backdrop-blur-xl shadow-xl flex flex-col items-center gap-2">
-        <Image
+        <div className="h-6 overflow-hidden flex justify-center items-center">
+          <Image
           alt=""
           src={"/sanka.svg"}
-          height={500}
+          height={200}
           width={1000}
           className="size-28 h-10"
         />
+        </div>
         <h1>Join the Waitlist</h1>
         <p className="text-xs text-neutral-400 ">
           Sanka lets you create Next.js apps, AI agents, and animated videos —
@@ -77,11 +79,9 @@ export default function Notify() {
           effortlessly.
         </p>
 
-        {count !== null && (
-          <p className="mb-6 text-sm text-gray-300">
-            {count} {count === 1 ? "person has" : "people have"} already joined
+          <p className="my-3 text-sm text-gray-300">
+            {count ? count : 0} {count === 1 ? "person has" : "people have"} already joined
           </p>
-        )}
 
         {message ? (
           <p
@@ -95,7 +95,7 @@ export default function Notify() {
         ) : (
           <form
             onSubmit={handleSubmit}
-            className="flex gap-3 justify-between p-1 rounded-full bg-black/40 text-white border border-white/30"
+            className="flex gap-3 justify-between p-1 rounded-xl bg-black/40 text-white border border-white/30"
           >
             <input
               type="email"
@@ -103,11 +103,11 @@ export default function Notify() {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="focus:outline-none w-full rounded-full pl-2"
+              className="focus:outline-none w-full rounded-lg pl-4 bg-none"
             />
             <button
               type="submit"
-              className="px-4 py-2 w-44 rounded-full flex justify-center bg-[#7768AD] hover:bg-[#32273C] cursor-pointer transition text-white font-medium"
+              className="px-4 py-2 w-44 rounded-lg flex justify-center bg-[#7768AD] hover:bg-[#32273C] cursor-pointer transition text-white font-medium"
             >
               {loading ? <Loader2 className="animate-spin"/> : "Notify Me"}
             </button>

@@ -180,7 +180,8 @@ const Page = () => {
         <PlaygroundPanels
           leftPanel={
             <div className="pl-2 pb-2">
-              <Chat initialMessage={initialMessage ?? ""} />
+              {/* <Chat initialMessage={initialMessage ?? ""} /> */}
+              <Chat/>
             </div>
           }
           rightPanel={

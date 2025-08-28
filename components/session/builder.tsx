@@ -89,7 +89,7 @@ const Builder = () => {
           />
           <div className="p-1 h-full">
             <button
-              onClick={handleAction}
+              onClick={() => handleAction()}
               disabled={loading}
               className="h-full aspect-square bg-neutral-400 rounded-full shrink-0 flex items-center justify-center hover:bg-neutral-300 transition-colors duration-200 active:scale-95"
             >

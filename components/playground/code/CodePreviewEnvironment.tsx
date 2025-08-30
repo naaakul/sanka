@@ -5,13 +5,7 @@ import { DownloadIcon } from "lucide-react";
 import PreviewPane from "./PreviewPane";
 import { CodeInterface } from "./CodeInterface";
 import { motion } from "framer-motion";
-
-interface CodeConfig {
-  files: {
-    path: string;
-    content: string;
-  }[];
-}
+import { CodeConfig } from "@/lib/types/codeChat.types";
 
 const categories = {
   ide: { label: "Code" },

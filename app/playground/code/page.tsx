@@ -7,13 +7,8 @@ import { PlaygroundPanels } from "@/components/playground/PlaygroundPanels";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Suspense } from "react";
-
-interface CodeConfig {
-  files: {
-    path: string;
-    content: string;
-  }[];
-}
+import { ChatSession } from "@/lib/types/codeChat.types";
+import { CodeConfig } from "@/lib/types/codeChat.types";
 
 const co = {
   files: [
@@ -132,6 +127,7 @@ export default function TodoForm({ newTodo, setNewTodo, handleAddTodo }: TodoFor
 };
 
 const Page = () => {
+  const [ChatSession, setChatSession] = useState<ChatSession>();
   const [config, setConfig] = useState<CodeConfig>(co);
   const searchParams = useSearchParams();
   const initialMessage = searchParams.get("q");

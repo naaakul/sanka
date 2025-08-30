@@ -4,19 +4,13 @@ import React, { useEffect, useState, useCallback } from "react";
 import FileTree from "./FileTree";
 import { EditorBreadcrumb } from "./EditorTabs";
 import { MonacoEditor } from "./MonacoEditor";
+import { CodeConfig } from "@/lib/types/codeChat.types";
 
 interface OpenFile {
   path: string;
   name: string;
   content: string;
   isDirty: boolean;
-}
-
-interface CodeConfig {
-  files: {
-    path: string;
-    content: string;
-  }[];
 }
 
 export const CodeInterface = (config: CodeConfig) => {

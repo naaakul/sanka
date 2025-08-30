@@ -1,13 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { CodeConfig } from "@/lib/types/codeChat.types";
 
-interface CodeConfig {
-  files: {
-    path: string;
-    content: string;
-  }[];
-}
 
 const PreviewPane = (config: CodeConfig) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);

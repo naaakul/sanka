@@ -42,7 +42,7 @@ const PlaygroundNavbar = () => {
           <NavigationMenuList>
             <NavigationMenuItem>
               <NavigationMenuTrigger>Smart terminal CLI</NavigationMenuTrigger>
-              <NavigationMenuContent>
+              <NavigationMenuContent className="z-20">
                 <ul className="grid w-[200px] gap-4">
                   <li>
                     <NavigationMenuLink asChild>

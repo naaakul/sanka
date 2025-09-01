@@ -170,13 +170,12 @@ const Page = () => {
   
   console.log("config :->", config);
   return (
-    <Suspense>
+    // <Suspense>
       <div className="h-screen flex flex-col">
         <PlaygroundNavbar />
-        {/* <p className="text-white">{JSON.stringify(config)}</p> */}
         <PlaygroundPanels
           leftPanel={
-            <div className="pl-2 pb-2">
+            <div className="pl-2 pb-2 h-full">
               <Chat
                 chatSession={chatSession ?? { turns: [] }}
                 setPrompt={setPrompt}
@@ -184,7 +183,7 @@ const Page = () => {
             </div>
           }
           rightPanel={
-            <div className="pr-2 pb-2">
+            <div className="pr-2 pb-2 h-full">
               <NextIDEInterface config={config || { files: [] }} />
             </div>
           }
@@ -193,7 +192,7 @@ const Page = () => {
           maxLeftWidth={60}
         />
       </div>
-    </Suspense>
+    // </Suspense>
   );
 };
 

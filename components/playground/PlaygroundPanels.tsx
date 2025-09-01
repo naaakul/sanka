@@ -69,7 +69,7 @@ export function PlaygroundPanels({
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
   return (
-    <div ref={containerRef} className={cn("flex", className)}>
+    <div ref={containerRef} className={cn("flex flex-1 overflow-auto", className)}>
       {/* Left Panel */}
       <div className="overflow-hidden h-full" style={{ width: `${leftWidth}%` }}>
         {leftPanel}

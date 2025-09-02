@@ -5,9 +5,10 @@ import NextIDEInterface from "@/components/playground/code/CodePreviewEnvironmen
 import PlaygroundNavbar from "@/components/playground/PlaygroundNavbar";
 import { PlaygroundPanels } from "@/components/playground/PlaygroundPanels";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Suspense } from "react";
 import { ChatSession, CodeConfig, CodeFile } from "@/lib/types/codeChat.types";
+import Sidebar from "@/components/playground/Sidebar";
 
 // const co = {
 //   files: [
@@ -130,6 +131,23 @@ const Page = () => {
   const [config, setConfig] = useState<CodeConfig | null>(null);
   const searchParams = useSearchParams();
   const [prompt, setPrompt] = useState<string | null>(searchParams.get("q"));
+  const [open, setOpen] = useState(false);
+  const closeTimer = useRef<number | null>(null);
+
+  function handleEnter() {
+    if (closeTimer.current) {
+      window.clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+    setOpen(true);
+  }
+
+  function handleLeave() {
+    closeTimer.current = window.setTimeout(() => {
+      setOpen(false);
+      closeTimer.current = null;
+    }, 120);
+  }
 
   useEffect(() => {
     if (!prompt) return;
@@ -147,7 +165,7 @@ const Page = () => {
 
         console.log("data :->", data);
         setConfig({ files: data.files });
-        
+
         setChatSession((prev) => ({
           turns: [
             ...(prev?.turns ?? []),
@@ -164,34 +182,35 @@ const Page = () => {
         console.error(err);
       }
     };
-    
+
     generateCode();
   }, [prompt]);
-  
+
   console.log("config :->", config);
   return (
     // <Suspense>
-      <div className="h-screen flex flex-col">
-        <PlaygroundNavbar />
-        <PlaygroundPanels
-          leftPanel={
-            <div className="pl-2 pb-2 h-full">
-              <Chat
-                chatSession={chatSession ?? { turns: [] }}
-                setPrompt={setPrompt}
-              />
-            </div>
-          }
-          rightPanel={
-            <div className="pr-2 pb-2 h-full">
-              <NextIDEInterface config={config || { files: [] }} />
-            </div>
-          }
-          defaultLeftWidth={50}
-          minLeftWidth={30}
-          maxLeftWidth={60}
-        />
-      </div>
+    <div className="h-screen flex flex-col">
+      <Sidebar open={open} handleEnter={handleEnter} handleLeave={handleLeave}/>
+      <PlaygroundNavbar handleEnter={handleEnter} handleLeave={handleLeave} />
+      <PlaygroundPanels
+        leftPanel={
+          <div className="pl-2 pb-2 h-full">
+            <Chat
+              chatSession={chatSession ?? { turns: [] }}
+              setPrompt={setPrompt}
+            />
+          </div>
+        }
+        rightPanel={
+          <div className="pr-2 pb-2 h-full">
+            <NextIDEInterface config={config || { files: [] }} />
+          </div>
+        }
+        defaultLeftWidth={50}
+        minLeftWidth={30}
+        maxLeftWidth={60}
+      />
+    </div>
     // </Suspense>
   );
 };

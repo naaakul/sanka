@@ -15,20 +15,33 @@ import {
 
 export const { useSession, signIn, signOut } = createAuthClient();
 
-const PlaygroundNavbar = () => {
+interface SidebarProps {
+  handleEnter: () => void;
+  handleLeave: () => void;
+}
+
+const PlaygroundNavbar = ({handleEnter, handleLeave}: SidebarProps) => {
   const { data: session, isPending } = useSession();
 
   return (
     <div className="flex items-center px-4 py-1 justify-between">
       <div className="flex items-center gap-2">
         <Link href="/" className="flex-shrink-0">
-          <Image
-            src="/logo-w.svg"
-            alt="Logo"
-            height={32}
-            width={32}
-            className="sm:h-10 sm:w-10"
-          />
+          <button
+            type="button"
+            aria-label="Open side menu"
+            onMouseEnter={handleEnter}
+            onMouseLeave={handleLeave}
+            className="pointer-events-auto"
+          >
+            <Image
+              src="/logo-w.svg"
+              alt="Logo"
+              height={32}
+              width={32}
+              className="sm:h-10 sm:w-10"
+            />
+          </button>
         </Link>
 
         <span

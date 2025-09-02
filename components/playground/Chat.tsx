@@ -6,44 +6,44 @@ import { createAuthClient } from "better-auth/react";
 import Image from "next/image";
 import Input from "@/components/playground/Input";
 
-const mockChat: ChatSession = {
-  turns: [
-    {
-      user: ["Hey AI, can you make me a button component?"],
-      bot: {
-        messages:
-          "Sure! Here’s a simple React button component using Tailwind:",
-        code: [
-          {
-            path: "components/Button.tsx",
-            content:
-              "export default function Button({ label, onClick }: { label: string; onClick: () => void }) {\n  return (\n    <button onClick={onClick} className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'>\n      {label}\n    </button>\n  );\n}",
-          },
-        ],
-      },
-    },
-    {
-      user: ["Looks good, but can you make it disabled sometimes?"],
-      bot: {
-        messages: "Yep — added a `disabled` prop for you:",
-        code: [
-          {
-            path: "components/Button.tsx",
-            content:
-              "export default function Button({ label, onClick, disabled = false }: { label: string; onClick: () => void; disabled?: boolean }) {\n  return (\n    <button\n      onClick={onClick}\n      disabled={disabled}\n      className={`px-4 py-2 rounded text-white ${disabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}\n    >\n      {label}\n    </button>\n  );\n}",
-          },
-        ],
-      },
-    },
-    {
-      user: ["Perfect, thanks!"],
-      bot: {
-        messages: "",
-        code: [],
-      },
-    },
-  ],
-};
+// const mockChat: ChatSession = {
+//   turns: [
+//     {
+//       user: ["Hey AI, can you make me a button component?"],
+//       bot: {
+//         messages:
+//           "Sure! Here’s a simple React button component using Tailwind:",
+//         code: [
+//           {
+//             path: "components/Button.tsx",
+//             content:
+//               "export default function Button({ label, onClick }: { label: string; onClick: () => void }) {\n  return (\n    <button onClick={onClick} className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'>\n      {label}\n    </button>\n  );\n}",
+//           },
+//         ],
+//       },
+//     },
+//     {
+//       user: ["Looks good, but can you make it disabled sometimes?"],
+//       bot: {
+//         messages: "Yep — added a `disabled` prop for you:",
+//         code: [
+//           {
+//             path: "components/Button.tsx",
+//             content:
+//               "export default function Button({ label, onClick, disabled = false }: { label: string; onClick: () => void; disabled?: boolean }) {\n  return (\n    <button\n      onClick={onClick}\n      disabled={disabled}\n      className={`px-4 py-2 rounded text-white ${disabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}\n    >\n      {label}\n    </button>\n  );\n}",
+//           },
+//         ],
+//       },
+//     },
+//     {
+//       user: ["Perfect, thanks!"],
+//       bot: {
+//         messages: "",
+//         code: [],
+//       },
+//     },
+//   ],
+// };
 
 export const { useSession } = createAuthClient();
 

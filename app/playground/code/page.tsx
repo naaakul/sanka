@@ -6,9 +6,16 @@ import PlaygroundNavbar from "@/components/playground/PlaygroundNavbar";
 import { PlaygroundPanels } from "@/components/playground/PlaygroundPanels";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Suspense } from "react";
+// import { Suspense } from "react";
 import { ChatSession, CodeConfig, CodeFile } from "@/lib/types/codeChat.types";
 import Sidebar from "@/components/playground/Sidebar";
+import { getChatSessions } from "@/app/actions/getChatSessions";
+import { createAuthClient } from "better-auth/react";
+import { prisma } from "@/lib/prisma";
+
+
+export const { useSession } = createAuthClient();
+
 
 // const co = {
 //   files: [
@@ -126,13 +133,19 @@ import Sidebar from "@/components/playground/Sidebar";
 //   ],
 // };
 
-const Page = () => {
+const Page = async () => {
+  const { data: session } = useSession();
   const [chatSession, setChatSession] = useState<ChatSession>();
   const [config, setConfig] = useState<CodeConfig | null>(null);
   const searchParams = useSearchParams();
   const [prompt, setPrompt] = useState<string | null>(searchParams.get("q"));
   const [open, setOpen] = useState(false);
   const closeTimer = useRef<number | null>(null);
+  const account = await prisma.account.findFirst({
+    where: { userId: session?.user.id },
+  });
+  const accountId = account?.id ?? null;
+  const sessions = await getChatSessions(accountId ?? "");
 
   function handleEnter() {
     if (closeTimer.current) {
@@ -190,7 +203,7 @@ const Page = () => {
   return (
     // <Suspense>
     <div className="h-screen flex flex-col">
-      <Sidebar open={open} handleEnter={handleEnter} handleLeave={handleLeave}/>
+      <Sidebar sessions={sessions} open={open} handleEnter={handleEnter} handleLeave={handleLeave}/>
       <PlaygroundNavbar handleEnter={handleEnter} handleLeave={handleLeave} />
       <PlaygroundPanels
         leftPanel={
@@ -198,6 +211,7 @@ const Page = () => {
             <Chat
               chatSession={chatSession ?? { turns: [] }}
               setPrompt={setPrompt}
+              useSession={useSession}
             />
           </div>
         }

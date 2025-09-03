@@ -56,12 +56,9 @@ model ChatSession {
 
   account    Account  @relation(fields: [accountId], references: [id])
 
-  // optional fields
   title      String? 
-  // status     String?   
   data       Json? 
 }
-
 
 model Session {
   id           String   @id @default(cuid())

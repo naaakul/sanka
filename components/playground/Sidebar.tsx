@@ -1,19 +1,34 @@
-"use client"
+"use client";
 
-import { motion, AnimatePresence } from "framer-motion"
-import { cn } from "@/lib/utils"
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
+import {
+  Folder,
+  Search,
+} from "lucide-react";
+
+interface SessionItem{
+    title: string | null;
+    id: string;
+    createdAt: Date;
+}[]
 
 interface SidebarProps {
   handleEnter: () => void;
   handleLeave: () => void;
   open: boolean;
+  sessions: SessionItem[];
 }
 
-export default function Sidebar({handleEnter, handleLeave, open}: SidebarProps) {
-
+export default function Sidebar({
+  handleEnter,
+  handleLeave,
+  open,
+  sessions = [],
+}: SidebarProps) {
   return (
     <div className="fixed inset-y-0 left-0 z-50 pointer-events-none">
-
       <AnimatePresence>
         {open && (
           <motion.aside
@@ -26,38 +41,54 @@ export default function Sidebar({handleEnter, handleLeave, open}: SidebarProps) 
             onMouseLeave={handleLeave}
             style={{ "--offset": "3.84rem" } as React.CSSProperties}
             className={cn(
-              "pointer-events-auto z-60 fixed left-2 bottom-2 rounded-lg h-[calc(100%-var(--offset))] w-[20.833333%] border bg-sidebar shadow"
+              "pointer-events-auto z-60 fixed left-2 bottom-2 overflow-hidden rounded-lg h-[calc(100%-var(--offset))] w-[15.833333%] border bg-sidebar shadow"
             )}
           >
-            <div className="flex h-full flex-col">
-              <div className="flex items-center justify-between px-4 py-3 border-b">
-                <div className="flex items-center gap-2">
-                  <div className="flex size-6 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                    <svg viewBox="0 0 24 24" className="size-4" fill="currentColor" role="img" aria-hidden="true">
-                      <path d="M12 2.75l2.834 6.089 6.716.517-5.097 4.377 1.537 6.5L12 16.96 6.01 20.233l1.537-6.5-5.097-4.377 6.716-.517L12 2.75z" />
-                    </svg>
-                  </div>
-                  <span className="text-sm font-semibold">Pigstar</span>
-                </div>
-              </div>
+            <div className="flex h-full flex-col bg-neutral-950">
+              <Button className="m-2 mb-0 bg-neutral-900 text-white text-md border hover:bg-neutral-800 cursor-pointer">
+                New app
+              </Button>
 
-              <nav className="flex-1 p-4">
-                <ul className="flex flex-col gap-2">
-                  {["Dashboard", "Projects", "Reports", "Settings"].map((item) => (
-                    <li key={item}>
-                      <a href="#" className="block rounded-md px-3 py-2 text-sm hover:bg-accent">
-                        {item}
+              <nav className="flex-1 p-2 pt-1">
+                <ul className="flex flex-col gap-1">
+                  <li>
+                    <a
+                      href="#"
+                      className="flex gap-2 items-center text-md rounded-md px-3 py-2 text-sm cursor-pointer"
+                    >
+                      <Search className="size-4"/>
+                      Search
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="flex gap-2 items-center text-md rounded-md px-3 py-2 text-sm cursor-pointer"
+                    >
+                      <Folder className="size-4"/>
+                      Projects
+                    </a>
+                  </li>
+                </ul>
+
+
+                <ul className="flex flex-col gap-1">
+                  {sessions.map((s) => (
+                    <li key={s.id}>
+                      <a
+                        href={`/chat/${s.id}`}
+                        className="flex gap-2 items-center rounded-md px-3 py-2 text-sm cursor-pointer hover:bg-neutral-800 text-white"
+                      >
+                        {s.title ?? "Untitled"}
                       </a>
                     </li>
                   ))}
                 </ul>
               </nav>
-
-              <div className="border-t p-4 text-xs text-muted-foreground">Hover the Pigstar logo to open</div>
             </div>
           </motion.aside>
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { ChatSession } from "@/lib/types/codeChat.types";
-import { createAuthClient } from "better-auth/react";
+// import { createAuthClient } from "better-auth/react";
 import Image from "next/image";
 import Input from "@/components/playground/Input";
 
@@ -45,14 +45,15 @@ const mockChat: ChatSession = {
   ],
 };
 
-export const { useSession } = createAuthClient();
+// export const { useSession } = createAuthClient();
 
 interface ChatProps {
   chatSession: ChatSession;
   setPrompt: React.Dispatch<React.SetStateAction<string | null>>;
+  useSession: any
 }
 
-export default function Chat({ chatSession, setPrompt }: ChatProps) {
+export default function Chat({ chatSession, setPrompt, useSession }: ChatProps) {
   const { data: session, isPending } = useSession();
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement | null>(null);

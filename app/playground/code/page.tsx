@@ -9,14 +9,7 @@ import { useEffect, useRef, useState } from "react";
 // import { Suspense } from "react";
 import { ChatSession, CodeConfig, CodeFile } from "@/lib/types/codeChat.types";
 import Sidebar from "@/components/playground/Sidebar";
-// import { getChatSessions } from "@/app/actions/getChatSessions";
-// import { createAuthClient } from "better-auth/react";
 import { useSession } from "@/lib/auth/auth-client";
-// import { prisma } from "@/lib/prisma";
-
-
-
-
 
 // const co = {
 //   files: [
@@ -143,17 +136,14 @@ const Page = () => {
   const [prompt, setPrompt] = useState<string | null>(searchParams.get("q"));
   const [open, setOpen] = useState(false);
   const closeTimer = useRef<number | null>(null);
-  // const account = await prisma.account.findFirst({
-  //   where: { userId: session?.user.id },
-  // });
-  // const accountId = account?.id ?? null;
-  // const sessions = await getChatSessions(accountId ?? "");
+
   useEffect(() => {
     const fetchSessions = async () => {
       const res = await fetch("/api/chat-sessions");
       if (!res.ok) return;
       const data = await res.json();
-      setSessions(data.sessions);
+      // console.log("got dataaaaaaa---------> ", data);
+      setSessions(data);
     };
     fetchSessions();
   }, []);
@@ -210,11 +200,15 @@ const Page = () => {
     generateCode();
   }, [prompt]);
 
-  // console.log("config :->", config);
   return (
     // <Suspense>
     <div className="h-screen flex flex-col">
-      <Sidebar sessions={sessions} open={open} handleEnter={handleEnter} handleLeave={handleLeave}/>
+      <Sidebar
+        sessions={sessions}
+        open={open}
+        handleEnter={handleEnter}
+        handleLeave={handleLeave}
+      />
       <PlaygroundNavbar handleEnter={handleEnter} handleLeave={handleLeave} />
       <PlaygroundPanels
         leftPanel={

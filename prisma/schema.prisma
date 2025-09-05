@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,15 +8,16 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
+  id            String       @id @default(cuid())
+  email         String       @unique
   name          String?
   image         String?
   accounts      Account[]
   sessions      Session[]
-  emailVerified Boolean
-  createdAt     DateTime
-  updatedAt     DateTime
+  chats         ChatSession[]  
+  emailVerified Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 
   @@map("user")
 }
@@ -33,8 +33,8 @@ model Account {
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
   password              String?
-  createdAt             DateTime
-  updatedAt             DateTime
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id])
 
@@ -42,22 +42,18 @@ model Account {
   providerId String
   scope      String?
 
-  chatSessions ChatSession[]
-
   @@unique([provider, providerAccountId])
   @@map("account")
 }
 
 model ChatSession {
-  id         String   @id @default(cuid())
-  accountId  String   // foreign key to Account
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  account    Account  @relation(fields: [accountId], references: [id])
-
-  title      String? 
-  data       Json? 
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String?
+  data      Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Session {
@@ -67,23 +63,22 @@ model Session {
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id])
   expiresAt    DateTime
-  token        String
-  createdAt    DateTime
-  updatedAt    DateTime
+  token        String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
   ipAddress    String?
   userAgent    String?
 
-  @@unique([token])
   @@map("session")
 }
 
 model Verification {
-  id         String    @id
+  id         String    @id @default(cuid())
   identifier String
   value      String
   expiresAt  DateTime
-  createdAt  DateTime?
-  updatedAt  DateTime?
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
 
   @@map("verification")
 }

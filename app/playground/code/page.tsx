@@ -138,14 +138,14 @@ const Page = () => {
   const closeTimer = useRef<number | null>(null);
 
   useEffect(() => {
-    const fetchSessions = async () => {
-      const res = await fetch("/api/chat-sessions");
-      if (!res.ok) return;
-      const data = await res.json();
-      // console.log("got dataaaaaaa---------> ", data);
-      setSessions(data);
-    };
-    fetchSessions();
+    // const fetchSessions = async () => {
+    //   const res = await fetch("/api/chat-sessions");
+    //   if (!res.ok) return;
+    //   const data = await res.json();
+    //   // console.log("got dataaaaaaa---------> ", data);
+    //   setSessions(data);
+    // };
+    // fetchSessions();
   }, []);
 
   function handleEnter() {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/utils/auth-helpers"; 
+import { auth } from "@/utils/auth-helpers";
 import { prisma } from "@/lib/prisma";
-import { redis } from "@/lib/redis"; 
+import { redis } from "@/lib/redis";
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,13 +12,18 @@ export async function POST(req: NextRequest) {
 
     const { prompt } = await req.json();
     if (!prompt || typeof prompt !== "string") {
-      return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Prompt is required" },
+        { status: 400 }
+      );
     }
 
-    const res = await fetch("/api/generate/code/chat/title", {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+    const res = await fetch(`${baseUrl}/api/generate/code/chat/title`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: {prompt} }),
+      body: JSON.stringify({ prompt }),
     });
     const data = await res.json();
 
@@ -45,6 +50,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ chatId: chat.id });
   } catch (err) {
     console.error("Error creating chat session:", err);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

@@ -1,0 +1,17 @@
+<svg width="360" height="75" viewBox="0 0 360 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sanka-gradient" x1="0" y1="0" x2="200" y2="0" gradientUnits="userSpaceOnUse" gradientTransform="rotate(30)">
+      <stop offset="0%" stop-color="#090909" />
+      <stop offset="30%" stop-color="#090909" />
+      <stop offset="43%" stop-color="#191919" />
+      <stop offset="56%" stop-color="#090909" />
+      <stop offset="100%" stop-color="#090909" />
+
+      <!-- Animate gradient movement -->
+      <animate attributeName="x1" from="-800" to="400" dur="1.5s" repeatCount="indefinite" />
+      <animate attributeName="x2" from="400" to="800" dur="1.5s" repeatCount="indefinite" />
+    </linearGradient>
+  </defs>
+
+  <path d="M359.69 16.6916C217.214 161.697 114.615 -19.2023 0.310088 58.3084C142.786 -86.6974 245.385 94.2023 359.69 16.6916Z" fill="url(#sanka-gradient)" />
+</svg>

@@ -8,11 +8,18 @@ const groq = new Groq({
 
 export async function POST(req: NextRequest) {
   try {
-    const { prompt } = await req.json();
+    const { chatId, prompt } = await req.json();
 
     if (!prompt || typeof prompt !== "string") {
       return NextResponse.json(
         { error: "Missing or invalid prompt" },
+        { status: 400 }
+      );
+    }
+
+    if (!chatId) {
+      return NextResponse.json(
+        { error: "Missing chatId" },
         { status: 400 }
       );
     }
@@ -45,12 +52,16 @@ export async function POST(req: NextRequest) {
       throw new Error("Invalid response: files is not an array");
     }
 
+    console.log("code BE - ", config.files)
+
     return NextResponse.json({
-      files: config.files,
-      botMessages: "here is your code",
+      bot: {
+        messages: "here is your code",
+        code: config.files,
+      },
     });
   } catch (err) {
-    console.error("Error in /api/generate:", err);
+    console.error("Error in /api/generate/code:", err);
     return NextResponse.json({ error: "Failed to generate" }, { status: 500 });
   }
 }

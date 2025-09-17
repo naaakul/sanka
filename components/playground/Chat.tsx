@@ -6,60 +6,63 @@ import { ChatSession } from "@/lib/types/codeChat.types";
 import Image from "next/image";
 import Input from "@/components/playground/Input";
 
-const mockChat: ChatSession = {
-  turns: [
-    {
-      user: ["Hey AI, can you make me a button component?"],
-      bot: {
-        messages:
-          "Sure! Here’s a simple React button component using Tailwind:",
-        code: [
-          {
-            path: "components/Button.tsx",
-            content:
-              "export default function Button({ label, onClick }: { label: string; onClick: () => void }) {\n return (\n <button onClick={onClick} className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'>\n {label}\n </button>\n );\n}",
-          },
-        ],
-      },
-    },
-    {
-      user: ["Looks good, but can you make it disabled sometimes?"],
-      bot: {
-        messages: "Yep — added a disabled prop for you:",
-        code: [
-          {
-            path: "components/Button.tsx",
-            content:
-              "export default function Button({ label, onClick, disabled = false }: { label: string; onClick: () => void; disabled?: boolean }) {\n return (\n <button\n onClick={onClick}\n disabled={disabled}\n className={px-4 py-2 rounded text-white ${disabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}}\n >\n {label}\n </button>\n );\n}",
-          },
-        ],
-      },
-    },
-    {
-      user: ["Perfect, thanks!"],
-      bot: {
-        messages: "",
-        code: [],
-      },
-    },
-  ],
-};
+// const mockChat: ChatSession = {
+//   turns: [
+//     {
+//       user: ["Hey AI, can you make me a button component?"],
+//       bot: {
+//         messages:
+//           "Sure! Here’s a simple React button component using Tailwind:",
+//         code: [
+//           {
+//             path: "components/Button.tsx",
+//             content:
+//               "export default function Button({ label, onClick }: { label: string; onClick: () => void }) {\n return (\n <button onClick={onClick} className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'>\n {label}\n </button>\n );\n}",
+//           },
+//         ],
+//       },
+//     },
+//     {
+//       user: ["Looks good, but can you make it disabled sometimes?"],
+//       bot: {
+//         messages: "Yep — added a disabled prop for you:",
+//         code: [
+//           {
+//             path: "components/Button.tsx",
+//             content:
+//               "export default function Button({ label, onClick, disabled = false }: { label: string; onClick: () => void; disabled?: boolean }) {\n return (\n <button\n onClick={onClick}\n disabled={disabled}\n className={px-4 py-2 rounded text-white ${disabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}}\n >\n {label}\n </button>\n );\n}",
+//           },
+//         ],
+//       },
+//     },
+//     {
+//       user: ["Perfect, thanks!"],
+//       bot: {
+//         messages: "",
+//         code: [],
+//       },
+//     },
+//   ],
+// };
 
 interface ChatProps {
   // chatSession?: ChatSession;
   chatId: string | null;
-  setPrompt: React.Dispatch<React.SetStateAction<string | null>>;
+  // setPrompt: React.Dispatch<React.SetStateAction<string | null>>;
   useSession: any;
+  chat: ChatSession | null;
+  setChat: React.Dispatch<React.SetStateAction<ChatSession | null>>;
 }
 
-export default function Chat({ chatId, setPrompt, useSession }: ChatProps) {
+export default function Chat({ chatId, useSession, chat, setChat }: ChatProps) {
   const { data: session, isPending } = useSession();
-  const [chat, setChat] = useState<ChatSession | null>(null);
   const [loading, setLoading] = useState<boolean>(!!chatId);
   const [error, setError] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
+
+  // fatch dataaa for the chat
   useEffect(() => {
     if (!chatId) return;
 
@@ -90,73 +93,113 @@ export default function Chat({ chatId, setPrompt, useSession }: ChatProps) {
     };
   }, [chatId]);
 
+  // generate code and send data to rediss
+  const generatingRef = useRef(false);
 
+  async function generateForLastTurn(promptText: string) {
+    if (!chatId) return;
+    if (generatingRef.current) return;
 
+    generatingRef.current = true;
+    try {
+      const res = await fetch("/api/generate/code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chatId, prompt: promptText }),
+      });
 
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("generate API error:", text);
+        return;
+      }
+      
+      const body = await res.json();
 
-  // const generatingRef = useRef(false);
+      console.log("this is the code - ", body.bot.code);
 
-  // async function generateForLastTurn(promptText: string) {
-  //   if (!chatId) return; 
-  //   if (generatingRef.current) return;
+      if (body.bot) {
+        setChat((prev) => {
+          if (!prev) return prev;
+          const next = { ...prev, turns: [...prev.turns] };
+          const idx = next.turns.length - 1;
+          next.turns[idx] = {
+            ...next.turns[idx],
+            bot: {
+              messages: body.bot.messages ?? next.turns[idx].bot.messages,
+              code: body.bot.code ?? next.turns[idx].bot.code ?? [],
+            },
+          };
+          return next;
+        });
 
-  //   generatingRef.current = true;
-  //   try {
-  //     const res = await fetch("/api/generate/code", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ chatId, prompt: promptText }),
-  //     });
+        await fetch("/api/generate/code/chat/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sessionId: chatId,
+            role: "bot",
+            content: body.bot.messages,
+          }),
+        }).catch((err) => console.error("persist bot message failed:", err));
+      }
+    } catch (err) {
+      console.error("generateForLastTurn failed:", err);
+    } finally {
+      generatingRef.current = false;
+    }
+  }
 
-  //     if (!res.ok) {
-  //       const text = await res.text();
-  //       console.error("generate API error:", text);
-  //       return;
-  //     }
+  useEffect(() => {
+    if (!chat) return;
+    const turns = chat.turns;
+    if (!turns || turns.length === 0) return;
 
-  //     const body = await res.json();
+    const last = turns[turns.length - 1];
+    const userHasText =
+      Array.isArray(last.user) && last.user.join(" ").trim() !== "";
+    const botEmpty = !last.bot?.messages || last.bot.messages.trim() === "";
 
-  //     if (body.bot) {
-  //       setChat((prev) => {
-  //         if (!prev) return prev;
-  //         const next = { ...prev, turns: [...prev.turns] };
-  //         const idx = next.turns.length - 1;
-  //         next.turns[idx] = {
-  //           ...next.turns[idx],
-  //           bot: {
-  //             messages: body.bot.messages ?? next.turns[idx].bot.messages,
-  //             code: body.bot.code ?? next.turns[idx].bot.code ?? [],
-  //           },
-  //         };
-  //         return next;
-  //       });
-  //     }
-  //   } catch (err) {
-  //     console.error("generateForLastTurn failed:", err);
-  //   } finally {
-  //     generatingRef.current = false;
-  //   }
-  // }
+    if (userHasText && botEmpty && chatId && !generatingRef.current) {
+      generateForLastTurn(last.user.join(" "));
+    }
+  }, [chat, chatId]);
 
-  // useEffect(() => {
-  //   if (!chat) return;
-  //   const turns = chat.turns;
-  //   if (!turns || turns.length === 0) return;
+  // sending prompts to radis
+  async function handleSend() {
+    if (!input.trim() || !chatId) return;
 
-  //   const last = turns[turns.length - 1];
-  //   const userHasText =
-  //     Array.isArray(last.user) && last.user.join(" ").trim() !== "";
-  //   const botEmpty = !last.bot?.messages || last.bot.messages.trim() === "";
+    const promptText = input.trim();
+    setInput("");
 
-  //   if (userHasText && botEmpty && chatId && !generatingRef.current) {
-  //     generateForLastTurn(last.user.join(" "));
-  //   }
-  // }, [chat, chatId]);
+    setChat((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        turns: [
+          ...prev.turns,
+          { user: [promptText], bot: { messages: "", code: [] } },
+        ],
+      };
+    });
 
+    try {
+      const res = await fetch(`/api/generate/code/chat/send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chatId, prompt: promptText }),
+      });
 
+      if (!res.ok) throw new Error(await res.text());
+      const updated = await res.json();
 
+      setChat(updated);
+    } catch (err) {
+      console.error("handleSend failed:", err);
+    }
+  }
 
-
+  // scrolling chat down 
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -166,44 +209,6 @@ export default function Chat({ chatId, setPrompt, useSession }: ChatProps) {
     );
     return () => clearTimeout(t);
   }, [chat]);
-
-
-
-
-
-  async function handleSend() {
-  if (!input.trim() || !chatId) return;
-
-  const promptText = input.trim();
-  setInput("");
-
-  setChat((prev) => {
-    if (!prev) return prev;
-    return {
-      ...prev,
-      turns: [
-        ...prev.turns,
-        { user: [promptText], bot: { messages: "", code: [] } },
-      ],
-    };
-  });
-
-  try {
-    const res = await fetch(`/api/generate/code/send`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chatId, prompt: promptText }),
-    });
-
-    if (!res.ok) throw new Error(await res.text());
-    const updated = await res.json();
-
-    setChat(updated);
-  } catch (err) {
-    console.error("handleSend failed:", err);
-    // fallback: remove optimistic update or mark error
-  }
-}
 
 
   return (

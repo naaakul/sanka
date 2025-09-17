@@ -5,9 +5,9 @@ import NextIDEInterface from "@/components/playground/code/CodePreviewEnvironmen
 import PlaygroundNavbar from "@/components/playground/PlaygroundNavbar";
 import { PlaygroundPanels } from "@/components/playground/PlaygroundPanels";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 // import { Suspense } from "react";
-import { ChatSession, CodeConfig, CodeFile } from "@/lib/types/codeChat.types";
+import { ChatSession, CodeConfig } from "@/lib/types/codeChat.types";
 import Sidebar from "@/components/playground/Sidebar";
 import { useSession } from "@/lib/auth/auth-client";
 
@@ -128,27 +128,14 @@ import { useSession } from "@/lib/auth/auth-client";
 // };
 
 const Page = () => {
-  // const { data: session } = useSession();
-  const [sessions, setSessions] = useState([]);
-  const [chatSession, setChatSession] = useState<ChatSession>();
-  const [config, setConfig] = useState<CodeConfig | null>(null);
-  const searchParams = useSearchParams();
-  const [prompt, setPrompt] = useState<string | null>(searchParams.get("q"));
-  const chatId = searchParams.get("q");
+  const [chat, setChat] = useState<ChatSession | null>(null);
   const [open, setOpen] = useState(false);
+  const searchParams = useSearchParams();
+  const chatId = searchParams.get("q");
   const closeTimer = useRef<number | null>(null);
+  const [config, setConfig] = useState<CodeConfig | null>(null);
 
-  useEffect(() => {
-    // const fetchSessions = async () => {
-    //   const res = await fetch("/api/chat-sessions");
-    //   if (!res.ok) return;
-    //   const data = await res.json();
-    //   // console.log("got dataaaaaaa---------> ", data);
-    //   setSessions(data);
-    // };
-    // fetchSessions();
-  }, []);
-
+  // functions of side bar
   function handleEnter() {
     if (closeTimer.current) {
       window.clearTimeout(closeTimer.current);
@@ -164,48 +151,10 @@ const Page = () => {
     }, 120);
   }
 
-  useEffect(() => {
-    if (!prompt) return;
-
-    const generateCode = async () => {
-      try {
-        const res = await fetch("/api/generate/code", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt }),
-        });
-
-        const data: { files: CodeFile[]; botMessages: string } =
-          await res.json();
-
-        console.log("data :->", data);
-        setConfig({ files: data.files });
-
-        setChatSession((prev) => ({
-          turns: [
-            ...(prev?.turns ?? []),
-            {
-              user: [prompt],
-              bot: {
-                messages: data.botMessages,
-                code: data.files,
-              },
-            },
-          ],
-        }));
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    generateCode();
-  }, [prompt]);
-
   return (
     // <Suspense>
     <div className="h-screen flex flex-col">
       <Sidebar
-        sessions={sessions}
         open={open}
         handleEnter={handleEnter}
         handleLeave={handleLeave}
@@ -215,9 +164,9 @@ const Page = () => {
         leftPanel={
           <div className="pl-2 pb-2 h-full">
             <Chat
-              // chatSession={chatSession ?? { turns: [] }}
+              chat={chat}
+              setChat={setChat}
               chatId={chatId}
-              setPrompt={setPrompt}
               useSession={useSession}
             />
           </div>

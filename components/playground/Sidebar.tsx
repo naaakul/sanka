@@ -3,30 +3,44 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
-import {
-  Folder,
-  Search,
-} from "lucide-react";
+import { Folder, Search } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-interface SessionItem{
-    title: string | null;
-    id: string;
-    createdAt: Date;
+interface SessionItem {
+  chatTitle: string;
+  chatId: string;
 }
 
 interface SidebarProps {
   handleEnter: () => void;
   handleLeave: () => void;
   open: boolean;
-  sessions: SessionItem[];
 }
 
 export default function Sidebar({
   handleEnter,
   handleLeave,
   open,
-  sessions = [],
 }: SidebarProps) {
+  const [sessions, setSessions] = useState<SessionItem[]>([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchSessions = async () => {
+      try {
+        const res = await fetch("/api/sessions");
+        if (!res.ok) throw new Error("Failed to fetch sessions");
+        const data: SessionItem[] = await res.json();
+        setSessions(data);
+      } catch (err) {
+        console.error("Error fetching sessions:", err);
+      }
+    };
+
+    fetchSessions();
+  }, []);
+
   return (
     <div className="fixed inset-y-0 left-0 z-50 pointer-events-none">
       <AnimatePresence>
@@ -56,7 +70,7 @@ export default function Sidebar({
                       href="#"
                       className="flex gap-2 items-center text-md rounded-md px-3 py-2 text-sm cursor-pointer"
                     >
-                      <Search className="size-4"/>
+                      <Search className="size-4" />
                       Search
                     </a>
                   </li>
@@ -65,22 +79,23 @@ export default function Sidebar({
                       href="#"
                       className="flex gap-2 items-center text-md rounded-md px-3 py-2 text-sm cursor-pointer"
                     >
-                      <Folder className="size-4"/>
+                      <Folder className="size-4" />
                       Projects
                     </a>
                   </li>
                 </ul>
 
-
-                <ul className="flex flex-col gap-1">
+                <ul className="flex flex-col gap-1 mt-4">
                   {sessions.map((s) => (
-                    <li key={s.id}>
-                      <a
-                        href={`/chat/${s.id}`}
-                        className="flex gap-2 items-center rounded-md px-3 py-2 text-sm cursor-pointer hover:bg-neutral-800 text-white"
+                    <li key={s.chatId}>
+                      <button
+                        onClick={() =>
+                          router.push(`/playground/code?q=${s.chatId}`)
+                        }
+                        className="w-full text-left flex gap-2 items-center rounded-md px-3 py-2 text-sm cursor-pointer hover:bg-neutral-800 text-white"
                       >
-                        {s.title ?? "Untitled"}
-                      </a>
+                        {s.chatTitle}
+                      </button>
                     </li>
                   ))}
                 </ul>

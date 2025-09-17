@@ -10,6 +10,7 @@ import { useRef, useState } from "react";
 import { ChatSession, CodeConfig } from "@/lib/types/codeChat.types";
 import Sidebar from "@/components/playground/Sidebar";
 import { useSession } from "@/lib/auth/auth-client";
+import { useChatFlush } from "@/lib/useChatFlush";
 
 // const co = {
 //   files: [
@@ -134,6 +135,9 @@ const Page = () => {
   const chatId = searchParams.get("q");
   const closeTimer = useRef<number | null>(null);
   const [config, setConfig] = useState<CodeConfig | null>(null);
+
+  // flush
+  useChatFlush(chatId);
 
   // functions of side bar
   function handleEnter() {

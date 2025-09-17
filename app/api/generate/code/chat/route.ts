@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/utils/auth-helpers";
-import { getChatSessions } from "@/app/actions/getChatSessions";
+import { getChatSessions } from "@/lib/actions/getChatSessions";
 
 export async function GET(req: Request) {
   try {

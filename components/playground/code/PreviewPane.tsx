@@ -3,8 +3,12 @@
 import React, { useEffect, useState } from "react";
 import { CodeConfig } from "@/lib/types/codeChat.types";
 
+interface PreviewPaneProps {
+  version: string | null;
+  config: CodeConfig;
+}
 
-const PreviewPane = (config: CodeConfig) => {
+const PreviewPane: React.FC<PreviewPaneProps> = ({ version, config }) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -40,10 +44,14 @@ const PreviewPane = (config: CodeConfig) => {
 
   return (
     <div className="h-full bg-gray-900 flex flex-col">
+      {/* header */}
       <div className="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700">
-        <span className="text-sm text-gray-300">Preview</span>
+        <span className="text-sm text-gray-300">
+          Preview {version ? `— ${version}` : ""}
+        </span>
       </div>
 
+      {/* content */}
       <div className="flex-1 relative">
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center text-gray-400">
@@ -55,7 +63,7 @@ const PreviewPane = (config: CodeConfig) => {
           <iframe
             src={previewUrl}
             className="w-full h-full border-0"
-            title="Preview"
+            title={`Preview ${version || ""}`}
             sandbox="allow-scripts allow-same-origin"
           />
         )}

@@ -177,7 +177,7 @@ const Page = () => {
         }
         rightPanel={
           <div className="pr-2 pb-2 h-full">
-            <NextIDEInterface config={config || { files: [] }} />
+            <NextIDEInterface chat={chat} />
           </div>
         }
         defaultLeftWidth={50}

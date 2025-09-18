@@ -13,7 +13,12 @@ interface OpenFile {
   isDirty: boolean;
 }
 
-export const CodeInterface = (config: CodeConfig) => {
+interface CodeInterfaceProps {
+  version: string | null;     
+  config: CodeConfig | null; 
+}
+
+export const CodeInterface = ({ version, config }: CodeInterfaceProps) => {
   const [openFiles, setOpenFiles] = useState<OpenFile[]>([]);
   const [currentFile, setCurrentFile] = useState<OpenFile | null>(null);
 
@@ -80,38 +85,34 @@ export const CodeInterface = (config: CodeConfig) => {
   );
 
   useEffect(() => {
-    if (openFiles.length === 0) {
-      const prefer = config?.files?.find((f) =>
+    if (!config || !version) return;
+
+    if (config.files.length > 0) {
+      const prefer = config.files.find((f) =>
         ["app/layout.tsx", "app/page.tsx", "index.tsx"].includes(
           normalize(f.path)
         )
       );
-      if (prefer) {
-        openFileInEditor(prefer.path);
-      } else if (config?.files?.length) {
-        openFileInEditor(config.files[0].path);
-      } else {
-        const defaultPath = "app/layout.tsx";
-        const defaultContent = `import './globals.css';\nexport default function RootLayout({ children }: { children: React.ReactNode }) { return <html><body>{children}</body></html> }`;
-        const newFile: OpenFile = {
-          path: defaultPath,
-          name: "layout.tsx",
-          content: defaultContent,
-          isDirty: false,
-        };
-        setOpenFiles([newFile]);
-        setCurrentFile(newFile);
-      }
-    }
-  }, [
-    config,
-    openFiles.length,
-    openFileInEditor,
-    setOpenFiles,
-    setCurrentFile,
-  ]);
 
-  const [leftWidth, setLeftWidth] = useState(30); 
+      const defaultFile = prefer || config.files[0];
+
+      const newOpenFile: OpenFile = {
+        path: normalize(defaultFile.path),
+        name: defaultFile.path.split("/").pop() || defaultFile.path,
+        content: defaultFile.content,
+        isDirty: false,
+      };
+
+      setOpenFiles([newOpenFile]);
+      setCurrentFile(newOpenFile);
+    } else {
+      // fallback
+      setOpenFiles([]);
+      setCurrentFile(null);
+    }
+  }, [version, config]);
+
+  const [leftWidth, setLeftWidth] = useState(30);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -126,7 +127,6 @@ export const CodeInterface = (config: CodeConfig) => {
       const rect = containerRef.current.getBoundingClientRect();
       const newLeftWidth = ((e.clientX - rect.left) / rect.width) * 100;
 
-      // clamp between 15% and 40%
       const clamped = Math.min(Math.max(newLeftWidth, 15), 40);
       setLeftWidth(clamped);
     },
@@ -171,12 +171,10 @@ export const CodeInterface = (config: CodeConfig) => {
           />
         </div>
 
-        {/* resizzzzzer */}
         <div
           onMouseDown={handleMouseDown}
           className="relative w-[1px] cursor-e-resize flex-shrink-0 before:absolute before:inset-y-0 before:-left-2 before:-right-2 before:bg-transparent before:content-['']"
-        >
-        </div>
+        />
 
         <div
           style={{ width: `${100 - leftWidth}%` }}

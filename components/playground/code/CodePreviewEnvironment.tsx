@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { DownloadIcon } from "lucide-react";
 import PreviewPane from "./PreviewPane";
 import { CodeInterface } from "./CodeInterface";
 import { motion } from "framer-motion";
-import { CodeConfig } from "@/lib/types/codeChat.types";
 import JSZip from "jszip";
 import { fileSave } from "browser-fs-access";
+import { ChatSession, CodeFile, CodeConfig } from "@/lib/types/codeChat.types";
+import VersionSelect from "@/components/ui/VersionSelect";
 
 const categories = {
   ide: { label: "Code" },
@@ -15,20 +16,68 @@ const categories = {
 };
 
 interface NextIDEInterfaceProps {
-  config: CodeConfig;
+  chat: ChatSession | null;
 }
 
-const NextIDEInterface: React.FC<NextIDEInterfaceProps> = ({ config }) => {
-  async function handleDownload() {
-    const zip = new JSZip();
+interface Version {
+  version: string;
+  code: CodeFile[] | undefined;
+}
 
-    config.files.forEach((file) => {
+const NextIDEInterface: React.FC<NextIDEInterfaceProps> = ({ chat }) => {
+  // filter versions from chatttt
+  const versions: Version[] = useMemo(() => {
+    if (!chat) return [];
+    return chat.turns
+      .map((turn, idx) => ({
+        version: `v${idx + 1}`,
+        code: turn.bot.code,
+      }))
+      .filter((v) => v.code && v.code.length > 0);
+  }, [chat]);
+
+  const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
+  const [manualSelect, setManualSelect] = useState(false);
+
+  useEffect(() => {
+    if (versions.length === 0) return;
+
+    const latestVersion = versions[versions.length - 1].version;
+
+    if (!manualSelect) {
+      setSelectedVersion(latestVersion);
+    } else {
+      if (
+        selectedVersion !== latestVersion &&
+        versions.findIndex((v) => v.version === latestVersion) >
+          versions.findIndex((v) => v.version === selectedVersion)
+      ) {
+        setSelectedVersion(latestVersion);
+        setManualSelect(false);
+      }
+    }
+  }, [versions, selectedVersion, manualSelect]);
+
+  const currentCode =
+    versions.find((v) => v.version === selectedVersion)?.code || [];
+
+  // wrap into CodeConfig
+  const currentCodeConfig: CodeConfig = useMemo(() => {
+    return { files: currentCode };
+  }, [currentCode]);
+
+  // download zippp
+  async function handleDownload() {
+    if (!currentCode || currentCode.length === 0) return;
+
+    const zip = new JSZip();
+    currentCode.forEach((file) => {
       zip.file(file.path, file.content);
     });
 
     const blob = await zip.generateAsync({ type: "blob" });
     fileSave(blob, {
-      fileName: "code.zip",
+      fileName: `${selectedVersion || "code"}.zip`,
     });
   }
 
@@ -36,13 +85,14 @@ const NextIDEInterface: React.FC<NextIDEInterfaceProps> = ({ config }) => {
 
   return (
     <div className="h-full bg-[#1e1e1e] text-white flex flex-col rounded-lg border border-neutral-800 overflow-hidden">
-      <div className="bg-[#0F0F10] border-b border-neutral-900 px-4 py-2 flex items-center justify-between">
-        <div className="flex items-center justify-between p-1 rounded-xl relative  backdrop-blur-md w-fit">
+      <div className="bg-[#0F0F10] border-b border-neutral-900 p-2 flex items-center justify-between">
+        {/* toggle buttons */}
+        <div className="flex items-center justify-between p-1 rounded-xl relative backdrop-blur-md w-fit">
           {Object.entries(categories).map(([key, { label }]) => (
             <div
               key={key}
               onClick={() => setViewMode(key as "ide" | "preview")}
-              className="relative cursor-pointer w-full group text-center py-1.5 px-4 overflow-visible transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]"
+              className="relative cursor-pointer w-full group text-center py-1.5 px-4 transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]"
             >
               {viewMode === key && (
                 <motion.div
@@ -53,7 +103,6 @@ const NextIDEInterface: React.FC<NextIDEInterfaceProps> = ({ config }) => {
                     stiffness: 120,
                     damping: 10,
                     mass: 0.2,
-                    ease: [0, 1, 0.35, 0],
                   }}
                 />
               )}
@@ -67,19 +116,31 @@ const NextIDEInterface: React.FC<NextIDEInterfaceProps> = ({ config }) => {
             </div>
           ))}
         </div>
-        <button
-          onClick={handleDownload}
-          className="p-2 hover:bg-neutral-800 rounded"
-        >
-          <DownloadIcon className="size-5" />
-        </button>
+
+        {/* version selector + download */}
+        <div className="flex gap-2">
+          <VersionSelect
+            versionCount={versions.length}
+            selectedVersion={selectedVersion}
+            setSelectedVersion={(v) => {
+              setSelectedVersion(v);
+              setManualSelect(true);
+            }}
+          />
+          <button
+            onClick={handleDownload}
+            className="p-2 hover:bg-neutral-800 rounded-lg cursor-pointer"
+          >
+            <DownloadIcon className="size-5" />
+          </button>
+        </div>
       </div>
 
       <div className="flex-1 overflow-hidden">
         {viewMode === "ide" ? (
-          <CodeInterface {...config} />
+          <CodeInterface version={selectedVersion} config={currentCodeConfig} />
         ) : (
-          <PreviewPane {...config} />
+          <PreviewPane version={selectedVersion} config={currentCodeConfig} />
         )}
       </div>
     </div>

@@ -5,6 +5,7 @@ import Background from "@/components/ui/background";
 import Builder from "@/components/session/builder";
 import Intro from "@/components/session/Intro";
 import Hero from "@/components/session/Hero";
+import Cards from "@/components/session/Cards";
 
 const page = () => {
   return (
@@ -18,6 +19,7 @@ const page = () => {
         </main>
       </div>
       <Hero />
+      <Cards />
     </>
   );
 };

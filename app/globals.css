@@ -213,3 +213,20 @@
 .animate-gradient {
   animation: gradient-move 4s linear infinite;
 }
+
+.gradient-box {
+  height: 100%;
+  width: 33.3333%;
+  border-radius: 1.5rem;
+
+  background: radial-gradient(
+    ellipse at top center,
+    #4c4c4c,   
+    #8a8a8a,    
+    #eeeeee      
+  );
+}
+
+.josefin-sans {
+  font-family: "Josefin Sans";
+}

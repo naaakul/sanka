@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     }
 
     const chatCompletion = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       messages: [
         { role: "system", content: SCAFFOLD_SYSTEM_PROMPT },
         { role: "user", content: prompt },
@@ -36,10 +36,10 @@ export async function POST(req: NextRequest) {
     let text = chatCompletion.choices[0]?.message?.content || "";
 
     text = text
-      .replace(/^```json\s*/i, "")
-      .replace(/^```\s*/i, "")
-      .replace(/```$/i, "")
-      .trim();
+  .replace(/^```json\s*/i, "")
+  .replace(/^```\s*/i, "")
+  .replace(/```\s*$/i, "")
+  .trim();
 
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) {

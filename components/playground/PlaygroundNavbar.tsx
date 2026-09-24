@@ -20,7 +20,7 @@ interface SidebarProps {
   handleLeave: () => void;
 }
 
-const PlaygroundNavbar = ({handleEnter, handleLeave}: SidebarProps) => {
+const PlaygroundNavbar = ({ handleEnter, handleLeave }: SidebarProps) => {
   const { data: session, isPending } = useSession();
 
   return (
@@ -50,7 +50,7 @@ const PlaygroundNavbar = ({handleEnter, handleLeave}: SidebarProps) => {
         >
           /
         </span>
-              <p>Smart terminal CLI</p>
+        <p>Sanka Playground</p>
       </div>
 
       {isPending ? (

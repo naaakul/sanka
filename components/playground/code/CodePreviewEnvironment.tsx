@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { DownloadIcon } from "lucide-react";
+import { DownloadIcon, ExternalLink } from "lucide-react";
 import PreviewPane from "./PreviewPane";
 import { CodeInterface } from "./CodeInterface";
 import { motion } from "framer-motion";
@@ -9,6 +9,7 @@ import JSZip from "jszip";
 import { fileSave } from "browser-fs-access";
 import { ChatSession, CodeFile, CodeConfig } from "@/lib/types/codeChat.types";
 import VersionSelect from "@/components/ui/VersionSelect";
+import Link from "next/link";
 
 const categories = {
   ide: { label: "Code" },
@@ -88,6 +89,10 @@ const NextIDEInterface: React.FC<NextIDEInterfaceProps> = ({ chat }) => {
   // NEW: Cache for preview URLs (version -> previewUrl)
   const [previewCache, setPreviewCache] = useState<Record<string, string>>({});
 
+  const previewUrl = selectedVersion
+    ? (previewCache[selectedVersion] ?? undefined)
+    : undefined;
+
   return (
     <div className="h-full bg-[#1e1e1e] text-white flex flex-col rounded-lg border border-neutral-800 overflow-hidden">
       <div className="bg-[#0F0F10] border-b border-neutral-900 p-2 flex items-center justify-between">
@@ -123,7 +128,12 @@ const NextIDEInterface: React.FC<NextIDEInterfaceProps> = ({ chat }) => {
         </div>
 
         {/* version selector + download */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          {previewUrl && (
+            <Link href={previewUrl} target="_blank" className="p-2 hover:bg-neutral-800 rounded-lg cursor-pointer">
+              <ExternalLink className="size-5" />
+            </Link>
+          )}
           <VersionSelect
             versionCount={versions.length}
             selectedVersion={selectedVersion}
@@ -155,24 +165,19 @@ const NextIDEInterface: React.FC<NextIDEInterfaceProps> = ({ chat }) => {
       </div> */}
 
       <div className="flex-1 overflow-hidden relative">
-  <div
-    className={viewMode === "ide" ? "block" : "hidden"}
-  >
-    <CodeInterface version={selectedVersion} config={currentCodeConfig} />
-  </div>
+        <div className={viewMode === "ide" ? "block" : "hidden"}>
+          <CodeInterface version={selectedVersion} config={currentCodeConfig} />
+        </div>
 
-  <div
-    className={viewMode === "preview" ? "block h-full" : "hidden"}
-  >
-    <PreviewPane
-      version={selectedVersion}
-      config={currentCodeConfig}
-      previewCache={previewCache}
-      setPreviewCache={setPreviewCache}
-    />
-  </div>
-</div>
-
+        <div className={viewMode === "preview" ? "block h-full" : "hidden"}>
+          <PreviewPane
+            version={selectedVersion}
+            config={currentCodeConfig}
+            previewCache={previewCache}
+            setPreviewCache={setPreviewCache}
+          />
+        </div>
+      </div>
     </div>
   );
 };
